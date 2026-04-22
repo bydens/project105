@@ -1,0 +1,205 @@
+/* Global reset */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* App wrapper */
+.app {
+  width: 1024px;
+  min-height: 740px;
+  margin: 0 auto;
+  background: #F4F6F8;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.3;
+  color: #1C2833;
+}
+
+
+/* Blocks */
+.block { border-bottom: 1px solid #C6CED4; }
+.block-header {
+  padding: 4px 10px;
+  font-weight: 700;
+  font-size: 12px;
+  color: #1C2833;
+}
+.block-body {
+  background: #fff;
+  padding: 6px 8px;
+}
+
+.b-id   .block-header { background: #BDD7EE; }
+.b-in   .block-header { background: #FADBD8; }
+.b-rest .block-header { background: #F5CBA7; }
+.b-ing  .block-header { background: #D7BDE2; }
+.b-water .block-header { background: #A9DFBF; }
+.b-temp  .block-header { background: #F9E79F; }
+.b-mass  .block-header { background: #F8C471; }
+.b-out  .block-header { background: #E8DAEF; }
+.b-note .block-header { background: #D9D9D9; }
+
+/* Grid rows */
+.row {
+  display: grid;
+  gap: 6px;
+}
+.row + .row { margin-top: 6px; }
+.row.c6 { grid-template-columns: repeat(6, 1fr); }
+.row.c4 { grid-template-columns: repeat(4, 1fr); }
+.row.c3 { grid-template-columns: repeat(3, 1fr); }
+.row.in5 { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; }
+.row.melt { grid-template-columns: 72% 26%; gap: 2%; }
+.row.notes { grid-template-columns: 3fr 1fr; gap: 10px; }
+
+/* Fields */
+.field {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #2C3E50;
+  margin-bottom: 2px;
+}
+.unit {
+  font-size: 10px;
+  font-style: italic;
+  color: #8896A6;
+  font-weight: normal;
+}
+
+.field input[type="text"],
+.field select {
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 12px;
+  font-family: inherit;
+  background: #F8F9FB;
+  border: 1px solid #A8B3BC;
+  border-radius: 3px;
+  color: #1C2833;
+  outline: none;
+  min-height: 26px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.field input::placeholder { color: #B8C0C8; font-style: italic; }
+.field input:focus,
+.field select:focus {
+  border-color: #1F4E78;
+  box-shadow: 0 0 0 2px rgba(31,78,120,0.15);
+}
+.hint { font-size: 9.5px; font-style: italic; color: #8896A6; margin-top: 1px; }
+
+/* ph-moisture pair */
+.ph-moisture {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+/* Flag (control point) */
+.field.flag .label-row::before {
+  content: "⚑";
+  color: #C0392B;
+  font-weight: 700;
+  margin-right: 4px;
+}
+.field.flag input {
+  background: #FFF5F5;
+  border: 2px solid #E74C3C;
+}
+.field.flag input:focus {
+  box-shadow: 0 0 0 2px rgba(231,76,60,0.25);
+}
+.field.flag.invalid input {
+  background: #FFE5E5;
+  border-color: #C0392B;
+}
+
+/* Computed (read-only auto) */
+.field.computed input {
+  background: #FFFBE0;
+  font-weight: 600;
+}
+.field.computed input:focus {
+  box-shadow: 0 0 0 2px rgba(245,196,64,0.25);
+}
+
+/* Checkboxes / radios */
+.checks { display: flex; flex-direction: column; }
+.checks .label-row { margin-bottom: 2px; }
+.checks-inner {
+  background: #F8F9FB;
+  border: 1px solid #A8B3BC;
+  border-radius: 3px;
+  padding: 4px 8px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  min-height: 26px;
+}
+.checks label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  user-select: none;
+}
+.checks input[type="radio"],
+.checks input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #1F4E78;
+}
+
+/* Triple row (blocks 5/6/7) */
+.triple {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  padding: 0;
+  background: #F4F6F8;
+}
+.triple > .block {
+  border: 1px solid #C6CED4;
+}
+
+/* Bottom bar */
+.bottom-bar {
+  background: #E4E7EA;
+  padding: 6px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #C6CED4;
+  font-size: 11px;
+  color: #566573;
+  font-style: italic;
+}
+.buttons { display: flex; gap: 8px; }
+.btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: filter 0.15s;
+}
+.btn:hover { filter: brightness(0.92); }
+.btn-secondary { background: #95A5A6; color: #fff; }
+.btn-primary { background: #27AE60; color: #fff; }
+
+@media (max-width: 1023px) {
+  .app { width: 100%; }
+}

@@ -1,0 +1,322 @@
+<div class="app" [formGroup]="form">
+
+  <!-- Block 1: Identification -->
+  <div class="block b-id">
+    <div class="block-header">1. ИДЕНТИФИКАЦИЯ</div>
+    <div class="block-body">
+      <div class="row c6">
+        <div class="field">
+          <div class="label-row"><span>Дата</span><span class="unit">ДД.ММ.ГГГГ</span></div>
+          <input type="text" formControlName="date" placeholder="19.04.2026">
+        </div>
+        <div class="field">
+          <div class="label-row"><span>Время начала</span><span class="unit">ЧЧ:ММ</span></div>
+          <input type="text" formControlName="time" placeholder="14:30">
+        </div>
+        <div class="field">
+          <div class="label-row"><span>№ варки (= докум.)</span></div>
+          <input type="text" formControlName="batchNo" placeholder="W33">
+        </div>
+        <div class="checks">
+          <div class="label-row"><span>№ стрейчмарины</span></div>
+          <div class="checks-inner">
+            <label>
+              <input type="radio" formControlName="streicher" value="1"> 1
+            </label>
+            <label>
+              <input type="radio" formControlName="streicher" value="2"> 2
+            </label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="label-row"><span>№ партии продукта</span></div>
+          <input type="text" formControlName="productBatch" placeholder="385">
+        </div>
+        <div class="field">
+          <div class="label-row"><span>Оператор (ФИО)</span></div>
+          <input type="text" formControlName="operator" placeholder="Елена Попова">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Block 2: Input grain -->
+  <div class="block b-in">
+    <div class="block-header">2. ВХОД: ЗЕРНО CAGLIATA</div>
+    <div class="block-body">
+      <div class="row in5">
+        <div class="field">
+          <div class="label-row"><span>Партии зерна (список)</span></div>
+          <select formControlName="grainBatch">
+            <option value="">— выбрать из списка —</option>
+            <option *ngFor="let o of grainBatchOptions" [value]="o">{{ o }}</option>
+            <option value="__manual__">✎ ввести вручную…</option>
+          </select>
+          <input *ngIf="form.get('grainBatch')?.value === '__manual__'"
+                 type="text" formControlName="grainBatchManual"
+                 placeholder="введите партию" style="margin-top:4px">
+          <div class="hint">из формы №1 или вручную</div>
+        </div>
+        <div class="checks">
+          <div class="label-row"><span>Тип cagliata</span></div>
+          <div class="checks-inner">
+            <label>
+              <input type="radio" formControlName="cagliataType" value="fatty"> жирная
+            </label>
+            <label>
+              <input type="radio" formControlName="cagliataType" value="skimmed"> обезж.
+            </label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="label-row"><span>Кол-во зерна</span><span class="unit">kg</span></div>
+          <input type="text" formControlName="grainQty" placeholder="205,00">
+        </div>
+        <div class="field">
+          <div class="label-row"><span>Жирность</span><span class="unit">%</span></div>
+          <input type="text" formControlName="fatPct" placeholder="1,20">
+          <div class="hint">0–50 %</div>
+        </div>
+        <div class="field">
+          <div class="label-row"><span>pH / Влажн.</span><span class="unit">— / %</span></div>
+          <div class="ph-moisture">
+            <input type="text" formControlName="ph" placeholder="5,50">
+            <input type="text" formControlName="moisture" placeholder="58,00">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Block 3: Input residuals -->
+  <div class="block b-rest">
+    <div class="block-header">3. ОСТАТКИ НА ВХОДЕ</div>
+    <div class="block-body">
+      <div class="row c3">
+        <div class="field">
+          <div class="label-row"><span>Возврат: № варки-источника</span></div>
+          <input type="text" formControlName="returnBatch" placeholder="(если не используется — пусто)">
+        </div>
+        <div class="field">
+          <div class="label-row"><span>Возврат: масса</span><span class="unit">kg</span></div>
+          <input type="text" formControlName="returnMass" placeholder="0,00">
+          <div class="hint">10–20 kg если есть</div>
+        </div>
+        <div class="field flag" [class.invalid]="isInvalid('deadIn')">
+          <div class="label-row"><span>Мёртвый ост. на загрузке</span><span class="unit">kg</span></div>
+          <input type="text" formControlName="deadIn" placeholder="2,50">
+          <div class="hint">не выше 5,00 kg</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Block 4: Ingredients -->
+  <div class="block b-ing">
+    <div class="block-header">4. ИНГРЕДИЕНТЫ</div>
+    <div class="block-body">
+      <div class="row in5">
+        <div class="field">
+          <div class="label-row"><span>NaCl (соль)</span><span class="unit">kg</span></div>
+          <input type="text" formControlName="nacl" placeholder="3,00">
+        </div>
+        <div class="field">
+          <div class="label-row"><span>Крахмал</span><span class="unit">kg</span></div>
+          <input type="text" formControlName="starch" placeholder="15,00">
+        </div>
+        <div class="field">
+          <div class="label-row"><span>Жир / Олей</span><span class="unit">kg</span></div>
+          <input type="text" formControlName="fatOil" placeholder="0,00">
+        </div>
+        <div class="field">
+          <div class="label-row"><span>Консервант: наим.</span></div>
+          <input type="text" formControlName="preservativeName" placeholder="K1">
+        </div>
+        <div class="field">
+          <div class="label-row"><span>Консерв: кол-во</span><span class="unit">kg</span></div>
+          <input type="text" formControlName="preservativeQty" placeholder="0,25">
+        </div>
+      </div>
+
+      <div class="row melt">
+        <div class="field">
+          <div class="label-row"><span>Плавитель-1: наименование</span></div>
+          <input type="text" formControlName="melter1Name" list="melt_list" placeholder="например: 3112">
+        </div>
+        <div class="field">
+          <div class="label-row"><span>П-1: кол-во</span><span class="unit">kg</span></div>
+          <input type="text" formControlName="melter1Qty" placeholder="1,80">
+        </div>
+      </div>
+      <div class="row melt">
+        <div class="field">
+          <div class="label-row"><span>Плавитель-2: наименование</span></div>
+          <input type="text" formControlName="melter2Name" list="melt_list" placeholder="например: 1180">
+        </div>
+        <div class="field">
+          <div class="label-row"><span>П-2: кол-во</span><span class="unit">kg</span></div>
+          <input type="text" formControlName="melter2Qty" placeholder="0,80">
+        </div>
+      </div>
+      <div class="row melt">
+        <div class="field">
+          <div class="label-row"><span>Плавитель-3: наименование</span></div>
+          <input type="text" formControlName="melter3Name" list="melt_list" placeholder="(не используется)">
+          <div class="hint">примеры: 3112, 1180, 331</div>
+        </div>
+        <div class="field">
+          <div class="label-row"><span>П-3: кол-во</span><span class="unit">kg</span></div>
+          <input type="text" formControlName="melter3Qty" placeholder="0,00">
+        </div>
+      </div>
+
+      <datalist id="melt_list">
+        <option *ngFor="let o of meltOptions" [value]="o"></option>
+      </datalist>
+    </div>
+  </div>
+
+  <!-- Triple: Water / Temperature / Mass -->
+  <div class="triple">
+    <!-- Block 5: Water -->
+    <div class="block b-water">
+      <div class="block-header">5. ВОДА (ИТОГО)</div>
+      <div class="block-body">
+        <div class="row c3">
+          <div class="field">
+            <div class="label-row"><span>Прям. залив</span><span class="unit">kg</span></div>
+            <input type="text" formControlName="waterDirect" placeholder="22,00">
+          </div>
+          <div class="field">
+            <div class="label-row"><span>Пар</span><span class="unit">kg</span></div>
+            <input type="text" formControlName="waterSteam" placeholder="20,00">
+          </div>
+          <div class="field computed">
+            <div class="label-row"><span>ИТОГО вода</span><span class="unit">kg</span></div>
+            <input type="text" formControlName="waterTotal" readonly>
+            <div class="hint">сумма двух подполей</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Block 6: Temperature -->
+    <div class="block b-temp">
+      <div class="block-header">6. ТЕМПЕРАТУРА МАССЫ</div>
+      <div class="block-body">
+        <div class="row c3">
+          <div class="field">
+            <div class="label-row"><span>После загрузки</span><span class="unit">°C</span></div>
+            <input type="text" formControlName="tempAfterLoad" placeholder="30,00">
+          </div>
+          <div class="field flag" [class.invalid]="isInvalid('tempMax')">
+            <div class="label-row"><span>Макс нагрев</span><span class="unit">°C</span></div>
+            <input type="text" formControlName="tempMax" placeholder="73,80">
+            <div class="hint">≤ 74,00 °C</div>
+          </div>
+          <div class="field">
+            <div class="label-row"><span>Перед выпуском</span><span class="unit">°C</span></div>
+            <input type="text" formControlName="tempBeforeDischarge" placeholder="73,50">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Block 7: Mass in boiler -->
+    <div class="block b-mass">
+      <div class="block-header">7. МАССА В КОТЛЕ</div>
+      <div class="block-body">
+        <div class="row c3">
+          <div class="field">
+            <div class="label-row"><span>После загрузки</span><span class="unit">kg</span></div>
+            <input type="text" formControlName="massAfterLoad" placeholder="250,00">
+          </div>
+          <div class="field">
+            <div class="label-row"><span>Перед выпуском</span><span class="unit">kg</span></div>
+            <input type="text" formControlName="massBeforeDischarge" placeholder="270,00">
+          </div>
+          <div class="field">
+            <div class="label-row"><span>Выпущенная</span><span class="unit">kg</span></div>
+            <input type="text" formControlName="massDischarged" placeholder="267,50">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Block 8: After discharge -->
+  <div class="block b-out">
+    <div class="block-header">8. ПОСЛЕ ВЫПУСКА — ОХЛАЖДЕНИЕ — УКЛАДКА</div>
+    <div class="block-body">
+      <div class="row c4">
+        <div class="field flag" [class.invalid]="isInvalid('deadOut')">
+          <div class="label-row"><span>Мёртвый ост. после выпуска</span><span class="unit">kg</span></div>
+          <input type="text" formControlName="deadOut" placeholder="2,50">
+          <div class="hint">не выше 5,00 kg</div>
+        </div>
+        <div class="field">
+          <div class="label-row"><span>Отцежено из чашовки</span><span class="unit">kg</span></div>
+          <input type="text" formControlName="extractedFromMold" placeholder="12,00">
+          <div class="hint">10–20 kg</div>
+        </div>
+        <div class="field">
+          <div class="label-row"><span>Длит-сть варки</span><span class="unit">мин</span></div>
+          <input type="text" formControlName="cookingDuration" placeholder="30">
+        </div>
+        <div class="field">
+          <div class="label-row"><span>Кол-во заполн. форм</span><span class="unit">шт</span></div>
+          <input type="text" formControlName="formsCount" placeholder="18">
+        </div>
+      </div>
+      <div class="row c4">
+        <div class="field">
+          <div class="label-row"><span>Время погрузки в контейнер</span><span class="unit">ЧЧ:ММ</span></div>
+          <input type="text" formControlName="containerLoadTime" placeholder="15:05">
+        </div>
+        <div class="field">
+          <div class="label-row"><span>№ контейнера</span></div>
+          <input type="text" formControlName="containerNo" placeholder="C-33-1">
+        </div>
+        <div class="field">
+          <div class="label-row"><span>Время извл. из водн. охл.</span><span class="unit">ЧЧ:ММ</span></div>
+          <input type="text" formControlName="extractTime" placeholder="21:30">
+        </div>
+        <div class="field">
+          <div class="label-row"><span>Кол-во блоков факт.</span><span class="unit">шт</span></div>
+          <input type="text" formControlName="actualBlocks" placeholder="18">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Block 9: Notes -->
+  <div class="block b-note">
+    <div class="block-header">9. ПРИМЕЧАНИЯ / ПОДПИСЬ ОПЕРАТОРА</div>
+    <div class="block-body">
+      <div class="row notes">
+        <div class="field">
+          <div class="label-row"><span>Примечания</span></div>
+          <input type="text" formControlName="notes" placeholder="(необязательно)">
+        </div>
+        <div class="field">
+          <div class="label-row"><span>Подпись оператора</span></div>
+          <input type="text" formControlName="signature" placeholder="Елена Попова">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="bottom-bar">
+    <div class="status">
+      Заполнено: <strong>{{ filledCount }}</strong>/40 полей
+      &nbsp;•&nbsp;
+      Автосохранение: <strong>{{ saveTime }}</strong>
+    </div>
+    <div class="buttons">
+      <button class="btn btn-secondary" type="button" (click)="saveDraft()">Сохранить черновик</button>
+      <button class="btn btn-primary" type="button" (click)="submitForm()">ОТПРАВИТЬ ФОРМУ</button>
+    </div>
+  </div>
+
+</div>
