@@ -1,0 +1,42 @@
+name: Build and Deploy Angular App
+
+# Запускать скрипт при каждом пуше в ветку main
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Скачиваем код из репозитория
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Устанавливаем нужную версию Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # 3. Устанавливаем зависимости
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Собираем Angular проект
+      - name: Build project
+        run: npm run build -- --configuration production
+
+      # 5. Копируем файлы на Hetzner через SSH
+      - name: Copy files to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          # Укажите правильный путь к собранным файлам (проверьте в angular.json)
+          source: "dist/mozzarella-form/browser/*"
+          # Укажите полный путь к папке frontend_dist на вашем сервере
+          target: "/root/n8n/frontend_dist"
+          strip_components: 3 # Убирает папки dist/your-app-name/browser при копировании
