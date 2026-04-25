@@ -40,3 +40,6 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+github_deploy_key
+github_deploy_key.pub
+package-lock.json
