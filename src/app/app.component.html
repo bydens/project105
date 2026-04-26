@@ -27,11 +27,11 @@
       <div class="fs-head">
         <span class="fs-num">01</span>
         <span class="fs-title">Идентификация варки</span>
-        <span class="fs-meta">8 полей</span>
+        <span class="fs-meta">9 полей</span>
       </div>
       <div class="fs-body">
 
-        <div class="field-row">
+        <div class="field-row cols-3">
           <div class="field">
             <label class="field-label">
               <span class="fnum">#1</span>Системный идентификатор
@@ -47,12 +47,19 @@
             </label>
             <input formControlName="free_id" class="inp" placeholder="произвольная строка (необязателен)">
           </div>
+          <div class="field">
+            <label class="field-label">
+              <span class="fnum">#3</span>Дата варки
+              <span class="req-mark">★</span>
+            </label>
+            <input formControlName="brew_date" class="inp" type="date">
+          </div>
         </div>
 
         <div class="field-row cols-3">
           <div class="field">
             <label class="field-label">
-              <span class="fnum">#3</span>Имя оператора
+              <span class="fnum">#4</span>Имя оператора
               <span class="req-mark">★</span>
             </label>
             <select formControlName="operator" class="inp">
@@ -62,7 +69,7 @@
           </div>
           <div class="field">
             <label class="field-label">
-              <span class="fnum">#4</span>Стрейчмарина
+              <span class="fnum">#5</span>Стрейчмарина
               <span class="req-mark">★</span>
             </label>
             <select formControlName="machine" class="inp">
@@ -73,7 +80,7 @@
           </div>
           <div class="field">
             <label class="field-label">
-              <span class="fnum">#5</span>Источник кальяты
+              <span class="fnum">#6</span>Источник кальяты
             </label>
             <select formControlName="source_kalyata" class="inp">
               <option value="stab_bath">Из ванны стабилизации</option>
@@ -85,7 +92,7 @@
         <div class="field-row cols-3">
           <div class="field">
             <label class="field-label">
-              <span class="fnum">#6</span>Рецептура
+              <span class="fnum">#7</span>Рецептура
               <span class="req-mark">★</span>
             </label>
             <select formControlName="recipe" class="inp">
@@ -95,7 +102,7 @@
           </div>
           <div class="field">
             <label class="field-label">
-              <span class="fnum">#7</span>Жир рецептуры
+              <span class="fnum">#8</span>Жир рецептуры
               <span class="req-mark">★</span>
             </label>
             <select formControlName="recipe_fat" class="inp">
@@ -107,7 +114,7 @@
           </div>
           <div class="field">
             <label class="field-label">
-              <span class="fnum">#8</span>Измельчение
+              <span class="fnum">#9</span>Измельчение
               <span class="source">волокно</span>
             </label>
             <div class="check-wrap" [class.checked]="grindingDone" (click)="toggleGrinding()">
@@ -651,6 +658,7 @@
     <div class="foot-meta">
       черновик · {{ progressFilled }}/{{ progressTotal }} полей · {{ progressPct }}%
     </div>
+    <span *ngIf="validationError" class="foot-error">{{ validationError }}</span>
     <div class="foot-actions">
       <button type="button" class="btn" (click)="resetForm()">Очистить</button>
       <button type="button" class="btn" (click)="downloadJson()" [disabled]="!savedRecords.length">Скачать JSON</button>

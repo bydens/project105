@@ -120,6 +120,8 @@
 .inp.readonly, .inp[readonly] { background: var(--readonly-bg); color: var(--g2); cursor: not-allowed; }
 .inp.warn { border-color: var(--warn); background: var(--warn-bg); border-width: 1.5px; }
 .inp.ok   { border-color: var(--ok);   background: var(--ok-bg); }
+.inp.ng-invalid.ng-touched { border-color: var(--accent); background: var(--accent-soft); border-width: 1.5px; }
+.inp.ng-invalid.ng-touched:focus { box-shadow: 0 0 0 3px rgba(184,71,42,0.2); }
 
 select.inp {
   background-image: linear-gradient(45deg, transparent 50%, var(--g2) 50%), linear-gradient(135deg, var(--g2) 50%, transparent 50%);
@@ -174,7 +176,7 @@ input[type="time"].inp::-webkit-calendar-picker-indicator { opacity: 0.5; cursor
 
 /* ── Water block ── */
 .water-block { background: var(--g6); border: 1px solid var(--g4); padding: 16px 18px; border-radius: 2px; margin-top: 8px; }
-.water-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; align-items: end; }
+.water-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; align-items: start; }
 .water-sum { background: var(--accent-soft); border: 1px solid var(--accent); padding: 10px 12px; text-align: center; border-radius: 2px; }
 .water-sum-lbl { font-family: var(--font-mono); font-size: 11.5px; color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
 .water-sum-val { font-family: var(--font-mono); font-size: 24px; font-weight: 700; color: var(--g0); font-feature-settings: 'tnum'; }
@@ -242,6 +244,8 @@ input[type="time"].inp::-webkit-calendar-picker-indicator { opacity: 0.5; cursor
   gap: 24px;
 }
 .foot-meta { font-family: var(--font-mono); font-size: 12.5px; color: var(--g2); flex: 1; }
+.foot-error { font-family: var(--font-mono); font-size: 12px; color: var(--accent); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.foot-error::before { content: '⚠'; }
 .foot-actions { display: flex; gap: 10px; }
 .btn { padding: 10px 22px; border: 1px solid var(--g4); background: var(--paper); color: var(--g1); font-family: var(--font-sans); font-size: 14.5px; font-weight: 600; letter-spacing: 0.4px; cursor: pointer; border-radius: 2px; transition: all 0.15s; }
 .btn:hover { border-color: var(--g0); }
