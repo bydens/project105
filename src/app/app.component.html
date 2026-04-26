@@ -52,14 +52,7 @@
         <div class="field-row cols-3">
           <div class="field">
             <label class="field-label">
-              <span class="fnum">#3</span>Дата варки
-              <span class="req-mark">★</span>
-            </label>
-            <input formControlName="brew_date" class="inp" type="date">
-          </div>
-          <div class="field">
-            <label class="field-label">
-              <span class="fnum">#4</span>Имя оператора
+              <span class="fnum">#3</span>Имя оператора
               <span class="req-mark">★</span>
             </label>
             <select formControlName="operator" class="inp">
@@ -69,13 +62,22 @@
           </div>
           <div class="field">
             <label class="field-label">
-              <span class="fnum">#5</span>Стрейчмарина
+              <span class="fnum">#4</span>Стрейчмарина
               <span class="req-mark">★</span>
             </label>
             <select formControlName="machine" class="inp">
               <option value="">— выбрать —</option>
               <option value="SM-1">СМ-1</option>
               <option value="SM-2">СМ-2</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">
+              <span class="fnum">#5</span>Источник кальяты
+            </label>
+            <select formControlName="source_kalyata" class="inp">
+              <option value="stab_bath">Из ванны стабилизации</option>
+              <option value="storage">Со склада</option>
             </select>
           </div>
         </div>
@@ -105,19 +107,7 @@
           </div>
           <div class="field">
             <label class="field-label">
-              <span class="fnum">#8</span>Источник кальяты
-            </label>
-            <select formControlName="source_kalyata" class="inp">
-              <option value="stab_bath">Из ванны стабилизации</option>
-              <option value="storage">Со склада</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="field-row">
-          <div class="field" style="max-width: 260px;">
-            <label class="field-label">
-              <span class="fnum">#9</span>Измельчение
+              <span class="fnum">#8</span>Измельчение
               <span class="source">волокно</span>
             </label>
             <div class="check-wrap" [class.checked]="grindingDone" (click)="toggleGrinding()">
