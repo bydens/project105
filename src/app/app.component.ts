@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  ReactiveFormsModule, FormBuilder, FormGroup, FormArray
+  ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -79,6 +79,8 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   steamStatus: FieldStatus  = { cls: '', helperText: 'мин. 20 кг по тензометрии', helperCls: 'helper' };
   m3Status: FieldStatus     = { cls: '', helperText: 'тензометрия котла', helperCls: 'helper' };
 
+  validationError = '';
+
   // Computed values
   waterSum = 0;
   balTotal = 0;
@@ -113,19 +115,19 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     this.form = this.fb.group({
       brew_date: [iso],
       free_id: [''],
-      operator: [''],
-      machine: [''],
+      operator: ['', Validators.required],
+      machine: ['', Validators.required],
       source_kalyata: ['stab_bath'],
-      recipe: [''],
-      recipe_fat: [''],
+      recipe: ['', Validators.required],
+      recipe_fat: ['', Validators.required],
       grinding_done: [true],
 
-      m_kalyata: [''],
-      ph_kalyata: [''],
-      moisture_kalyata: [''],
-      fat_kalyata: [''],
-      kalyata_fat_type: [''],
-      m_casein: [0],
+      m_kalyata: ['', Validators.required],
+      ph_kalyata: ['', Validators.required],
+      moisture_kalyata: ['', Validators.required],
+      fat_kalyata: ['', Validators.required],
+      kalyata_fat_type: ['', Validators.required],
+      m_casein: [''],
 
       m_dead: [5],
       perevary: this.fb.array([]),
@@ -134,25 +136,25 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
       emulsifiers: this.fb.array([this.createEmulsifierGroup()]),
       starch_type: ['kmc_high_melt'],
-      m_starch: [0],
-      m_salt: [0],
+      m_starch: [''],
+      m_salt: [''],
 
-      m_preservative: [0],
-      m_other: [0],
-      m_direct_water: [0],
-      m_steam_water: [0],
+      m_preservative: [''],
+      m_other: [''],
+      m_direct_water: [''],
+      m_steam_water: [''],
 
-      t_load: [''],
-      t_unload: [''],
-      T1: [''],
-      T2: [''],
-      T3: [''],
+      t_load: ['', Validators.required],
+      t_unload: ['', Validators.required],
+      T1: ['', Validators.required],
+      T2: ['', Validators.required],
+      T3: ['', Validators.required],
 
-      M3: [''],
-      M4: [''],
-      M5: [''],
-      N: [''],
-      t_weighing: [''],
+      M3: ['', Validators.required],
+      M4: ['', Validators.required],
+      M5: ['', Validators.required],
+      N: ['', Validators.required],
+      t_weighing: ['', Validators.required],
     });
 
     this.sub.add(
@@ -194,10 +196,10 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.fb.group({ mass: [''], recipe: [''], moisture: [''], fat_sv: [''], starch: [''] });
   }
   createFatGroup(): FormGroup {
-    return this.fb.group({ type: [''], mass: [0] });
+    return this.fb.group({ type: [''], mass: [''] });
   }
   createEmulsifierGroup(): FormGroup {
-    return this.fb.group({ type: [''], mass: [0] });
+    return this.fb.group({ type: [''], mass: [''] });
   }
 
   addPerevar(): void { this.perevary.push(this.createPerevarGroup()); }
@@ -553,28 +555,36 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // ── Save / Reset / Download ──────────────────────────────────────
   saveRecord(): void {
+    this.form.markAllAsTouched();
     const missing = this.REQ.filter(id => !this.has(id));
     if (missing.length > 0) {
-      alert('Заполните обязательные поля:\n• ' + missing.join('\n• '));
+      this.validationError = `Не заполнено полей: ${missing.length}`;
+      setTimeout(() => {
+        const el = document.querySelector<HTMLElement>('.inp.ng-invalid.ng-touched');
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 50);
       return;
     }
+    this.validationError = '';
     const record = { ...this.form.getRawValue(), system_id: this.systemId, saved_at: new Date().toISOString() };
     this.savedRecords.push(record);
     const ds = this.toYMD(new Date());
     this.dailyCounter[ds] = (this.dailyCounter[ds] || 0) + 1;
     this.autosaveText = `сохранено · ${new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`;
+    this.form.markAsUntouched();
     this.regenerateSystemId();
     this.recalc();
-    alert('Запись сохранена: ' + record.system_id);
   }
 
   resetForm(): void {
     if (!confirm('Очистить все поля формы?')) return;
+    this.validationError = '';
+    this.form.markAsUntouched();
     const iso = this.toIsoDate(new Date());
     this.form.reset({
       brew_date: iso, source_kalyata: 'stab_bath', starch_type: 'kmc_high_melt',
-      grinding_done: true, m_dead: 5, m_casein: 0, m_starch: 0, m_salt: 0,
-      m_preservative: 0, m_other: 0, m_direct_water: 0, m_steam_water: 0
+      grinding_done: true, m_dead: 5, m_casein: '', m_starch: '', m_salt: '',
+      m_preservative: '', m_other: '', m_direct_water: '', m_steam_water: ''
     });
     while (this.perevary.length) this.perevary.removeAt(0);
     while (this.fats.length) this.fats.removeAt(0);
