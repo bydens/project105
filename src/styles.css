@@ -1,5 +1,7 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: #F4F6F8;
+  background: #f2f1ec;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
