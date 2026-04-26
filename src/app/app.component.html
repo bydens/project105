@@ -19,51 +19,6 @@
 <form [formGroup]="form" novalidate>
 <div class="form-shell">
 
-  <!-- ═══ LEFT SIDEBAR ═══ -->
-  <aside class="form-side">
-    <div class="side-meta">
-      <div class="lot-label">Текущая варка</div>
-      <div class="lot-id">{{ systemId }}</div>
-      <div class="session-time">{{ sideSession }}</div>
-      <div class="machine-pill" [class.empty]="sideMachinePillEmpty">{{ sideMachinePill }}</div>
-    </div>
-
-    <div class="side-nav-label">Разделы формы</div>
-    <nav class="side-nav">
-      <a *ngFor="let sec of ['01','02','03','04','05','06','07','08','09']"
-         [href]="'#sec-' + sec"
-         [class.active]="activeSec === sec"
-         [class.complete]="secStatuses[sec] && secStatuses[sec].complete"
-         [class.has-warn]="secStatuses[sec] && secStatuses[sec].warn"
-         (click)="activeSec = sec">
-        <span class="sn-num">{{ sec }}</span>
-        <span class="sn-name">{{
-          sec === '01' ? 'Идентификация' :
-          sec === '02' ? 'Калька в котле' :
-          sec === '03' ? 'Внесение готового продукта' :
-          sec === '04' ? 'Жировая фаза' :
-          sec === '05' ? 'Гидроколлоид и соли' :
-          sec === '06' ? 'Микро и вода' :
-          sec === '07' ? 'Хронология варки' :
-          sec === '08' ? 'Контроль масс' :
-                         'Контроль соответствия'
-        }}</span>
-        <span class="sn-status">{{ secStatuses[sec] ? secStatuses[sec].text : '—' }}</span>
-      </a>
-    </nav>
-
-    <div class="side-progress">
-      <div class="side-progress-lbl">Заполнено полей</div>
-      <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="progressPct"></div>
-      </div>
-      <div class="progress-stats">
-        <span>{{ progressFilled }} / {{ progressTotal }}</span>
-        <span>{{ progressPct }}%</span>
-      </div>
-    </div>
-  </aside>
-
   <!-- ═══ MAIN CONTENT ═══ -->
   <main class="form-main">
 
