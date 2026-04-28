@@ -35,6 +35,34 @@ export interface EmulsifierRow {
   mass: number | null;
 }
 
+/** PocketBase pagination params for GET list */
+export interface PbListParams {
+  page?:      number;
+  perPage?:   number;
+  sort?:      string;
+  filter?:    string;
+  fields?:    string;
+  skipTotal?: boolean;
+}
+
+/** PocketBase paginated list response */
+export interface PbListResponse<T> {
+  page:       number;
+  perPage:    number;
+  totalPages: number;
+  totalItems: number;
+  items:      T[];
+}
+
+/** BatchRecord as returned from PocketBase (adds server-managed fields) */
+export interface PbBatchRecord extends BatchRecord {
+  id:             string;
+  collectionId:   string;
+  collectionName: string;
+  created:        string;
+  updated:        string;
+}
+
 export interface BatchRecord {
   system_id: string;
   free_id: string;

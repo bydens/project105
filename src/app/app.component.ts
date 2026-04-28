@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 import { CalcResult } from './core/models/ui.model';
-import { BatchRecord } from './core/models/batch.model';
+import { BatchRecord, PbBatchRecord } from './core/models/batch.model';
 import { BatchCalcService } from './core/services/batch-calc.service';
 import { BatchService } from './core/services/batch.service';
 import { RECIPES, REQ_FIELDS } from './core/constants/recipe.constants';
@@ -52,7 +52,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   submitting   = false;
   submitError  = '';
   validationError = '';
-  savedRecords: BatchRecord[] = [];
+  savedRecords: PbBatchRecord[] = [];
 
   calc: CalcResult = this.emptyCalc();
 
@@ -199,20 +199,24 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   closePreview(): void { this.showPreview = false; }
 
   submitRecord(): void {
-    const record: BatchRecord = { ...this.form.getRawValue(), system_id: this.systemId, saved_at: new Date().toISOString() };
-    this.submitting = true;
+    const payload: BatchRecord = {
+      ...this.form.getRawValue(),
+      system_id: this.systemId,
+      saved_at:  new Date().toISOString(),
+    };
+    this.submitting  = true;
     this.submitError = '';
-    this.batchSvc.submit(record).subscribe({
-      next:  () => this.finalizeSubmit(record),
+    this.batchSvc.create(payload).subscribe({
+      next:  (created) => this.finalizeSubmit(created),
       error: (err: unknown) => {
-        this.submitting = false;
+        this.submitting  = false;
         const e = err as { status?: number; statusText?: string; message?: string };
-        this.submitError = `Ошибка: ${e.status ? e.status + ' ' : ''}${e.statusText || e.message || 'нет ответа'}`.trim();
+        this.submitError = `Ошибка ${e.status ?? ''}: ${e.statusText || e.message || 'нет ответа от сервера'}`.trim();
       },
     });
   }
 
-  private finalizeSubmit(record: BatchRecord): void {
+  private finalizeSubmit(record: PbBatchRecord): void {
     this.submitting  = false;
     this.showPreview = false;
     this.savedRecords.push(record);
@@ -254,10 +258,15 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   downloadJson(): void { this.batchSvc.downloadJson(this.savedRecords); }
 
   removeRecord(i: number): void {
-    if (confirm(`Удалить запись ${this.savedRecords[i].system_id}?`)) {
-      this.savedRecords.splice(i, 1);
-      this.recalc();
-    }
+    const rec = this.savedRecords[i];
+    if (!confirm(`Удалить запись ${rec.system_id}?`)) return;
+    this.batchSvc.delete(rec.id).subscribe({
+      next: () => { this.savedRecords.splice(i, 1); this.recalc(); },
+      error: (err: unknown) => {
+        const e = err as { status?: number; message?: string };
+        alert(`Не удалось удалить запись на сервере: ${e.status ?? ''} ${e.message ?? ''}`.trim());
+      },
+    });
   }
 
   // ── Template helpers ─────────────────────────────────────────────────
