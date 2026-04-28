@@ -1,0 +1,39 @@
+<section class="form-section" id="sec-06">
+  <div class="fs-head">
+    <span class="fs-num">06</span>
+    <span class="fs-title">Микро и вода</span>
+    <span class="fs-meta">консервант · прочее · вода</span>
+  </div>
+  <div class="fs-body">
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Консервант <span class="unit">кг</span></label>
+        <input formControlName="m_preservative" class="inp numeric" type="number" step="0.01" min="0" max="5">
+      </div>
+      <div class="field">
+        <label class="field-label">Прочие ингредиенты <span class="unit">кг</span></label>
+        <input formControlName="m_other" class="inp numeric" type="number" step="0.01" min="0" max="20">
+      </div>
+    </div>
+
+    <div class="field-divider">Вода</div>
+    <div class="water-block">
+      <div class="water-row">
+        <div class="field">
+          <label class="field-label">Вода прямого залива <span class="unit">кг</span></label>
+          <input formControlName="m_direct_water" class="inp numeric" type="number" step="0.1" min="0" max="150">
+        </div>
+        <div class="field">
+          <label class="field-label">Вода в виде пара <span class="unit">кг</span></label>
+          <input formControlName="m_steam_water" [class]="'inp numeric ' + steamStatus.cls"
+                 type="number" step="0.1" min="0" max="100">
+          <span [class]="steamStatus.helperCls">{{ steamStatus.helperText }}</span>
+        </div>
+        <div class="water-sum">
+          <div class="water-sum-lbl">Σ контр. сумма</div>
+          <div class="water-sum-val">{{ fmt(waterSum, 1) }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

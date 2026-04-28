@@ -1,730 +1,109 @@
-<header class="global-head">
-  <div class="brand">
-    <span class="logo">Pizza C Claude</span>
-    <span class="sub"><strong>F3 · Варка моцареллы</strong> · Блок 07 ТП</span>
-  </div>
-  <div class="meta">
-    <div>Линия <strong>Pizza C Claude</strong></div>
-    <div>Стрейчмарины СМ-1 / СМ-2</div>
-  </div>
-</header>
+<app-header></app-header>
 
-<div class="status-bar">
-  <div class="id-block">Системный ID: <strong>{{ systemId }}</strong></div>
-  <div class="id-block">Свободный ID: <strong>{{ form.get('free_id')?.value || '—' }}</strong></div>
-  <div class="status-pill">draft</div>
-  <div class="autosave-ind">{{ autosaveText }}</div>
-</div>
+<app-status-bar
+  [systemId]="systemId"
+  [freeId]="freeId"
+  [autosaveText]="autosaveText"
+  [showPreview]="showPreview">
+</app-status-bar>
 
 <form [formGroup]="form" novalidate>
-<div class="form-shell">
+  <div class="form-shell">
 
-  <!-- ═══ MAIN CONTENT ═══ -->
-  <main class="form-main" *ngIf="!showPreview">
+    <!-- ═══ MAIN FORM ═══ -->
+    <main class="form-main" *ngIf="!showPreview">
+      <app-section-identification [systemId]="systemId"></app-section-identification>
+      <app-section-kalyata
+        [phStatus]="calc.phStatus"
+        [moistureStatus]="calc.moistureStatus">
+      </app-section-kalyata>
+      <app-section-perevary
+        [perevary]="perevary"
+        [deadStatus]="calc.deadStatus"
+        (addPerevar)="addPerevar()"
+        (removePerevar)="removePerevar($event)"
+        (recipeChange)="onPerevarRecipeChange($event)">
+      </app-section-perevary>
+      <app-section-fats
+        [fats]="fats"
+        (addFat)="addFat()"
+        (removeFat)="removeFat($event)">
+      </app-section-fats>
+      <app-section-hydrocolloids
+        [emulsifiers]="emulsifiers"
+        [saltStatus]="calc.saltStatus"
+        (addEmulsifier)="addEmulsifier()"
+        (removeEmulsifier)="removeEmulsifier($event)">
+      </app-section-hydrocolloids>
+      <app-section-water-micro
+        [steamStatus]="calc.steamStatus"
+        [waterSum]="calc.waterSum">
+      </app-section-water-micro>
+      <app-section-chronology [t2Status]="calc.t2Status"></app-section-chronology>
+      <app-section-mass-control
+        [m3Status]="calc.m3Status"
+        [m1Show]="m1Show">
+      </app-section-mass-control>
+      <app-section-recipe-control
+        [recipeCtlLevel1]="calc.recipeCtlLevel1"
+        [recipeCtlLevel2]="calc.recipeCtlLevel2"
+        [recipeCtlNote]="calc.recipeCtlNote"
+        [showRecipeCtlLevel2]="calc.showRecipeCtlLevel2"
+        [recipeCtlNoRecipe]="calc.recipeCtlNoRecipe"
+        [recipeCtlIsCustom]="calc.recipeCtlIsCustom"
+        [returnableOk]="calc.returnableOk"
+        [returnableDetail]="calc.returnableDetail"
+        [returnablePct]="calc.returnablePct">
+      </app-section-recipe-control>
+    </main>
 
-    <!-- ── РАЗДЕЛ 01 · Идентификация ── -->
-    <section class="form-section" id="sec-01">
-      <div class="fs-head">
-        <span class="fs-num">01</span>
-        <span class="fs-title">Идентификация варки</span>
-        <span class="fs-meta">9 полей</span>
-      </div>
-      <div class="fs-body">
+    <!-- ═══ PREVIEW ═══ -->
+    <app-preview
+      *ngIf="showPreview"
+      [previewSections]="previewSections"
+      [systemId]="systemId">
+    </app-preview>
 
-        <div class="field-row cols-3">
-          <div class="field">
-            <label class="field-label">
-              <span class="fnum">#1</span>Системный идентификатор
-              <span class="req-mark">★</span><span class="source">авто</span>
-            </label>
-            <input class="inp readonly" [value]="systemId" readonly>
-            <span class="helper">дата + код рецептуры + порядковый # за дату</span>
-          </div>
-          <div class="field">
-            <label class="field-label">
-              <span class="fnum">#2</span>Свободный идентификатор
-              <span class="source">оператор</span>
-            </label>
-            <input formControlName="free_id" class="inp" placeholder="произвольная строка (необязателен)">
-          </div>
-          <div class="field">
-            <label class="field-label">
-              <span class="fnum">#3</span>Дата варки
-              <span class="req-mark">★</span>
-            </label>
-            <input formControlName="brew_date" class="inp" type="date">
-          </div>
-        </div>
+    <!-- ═══ SIDEBAR ═══ -->
+    <app-sidebar
+      [balTotal]="calc.balTotal"
+      [balIngredients]="calc.balIngredients"
+      [waterSum]="calc.waterSum"
+      [returnableOk]="calc.returnableOk"
+      [returnablePct]="calc.returnablePct"
+      [returnableKg]="calc.returnableKg"
+      [totPerevary]="perevary.length"
+      [totFats]="totFats"
+      [totEmuls]="totEmuls"
+      [savedRecordsCount]="savedRecords.length"
+      [warnings]="calc.warnings">
+    </app-sidebar>
 
-        <div class="field-row cols-3">
-          <div class="field">
-            <label class="field-label">
-              <span class="fnum">#4</span>Имя оператора
-              <span class="req-mark">★</span>
-            </label>
-            <select formControlName="operator" class="inp">
-              <option value="">— выбрать —</option>
-              <option *ngFor="let op of operators" [value]="op">{{ op }}</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">
-              <span class="fnum">#5</span>Стрейчмарина
-              <span class="req-mark">★</span>
-            </label>
-            <select formControlName="machine" class="inp">
-              <option value="">— выбрать —</option>
-              <option value="SM-1">СМ-1</option>
-              <option value="SM-2">СМ-2</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">
-              <span class="fnum">#6</span>Источник кальяты
-            </label>
-            <select formControlName="source_kalyata" class="inp">
-              <option value="stab_bath">Из ванны стабилизации</option>
-              <option value="storage">Со склада</option>
-            </select>
-          </div>
-        </div>
+    <!-- ═══ FOOTER ═══ -->
+    <app-form-footer
+      [showPreview]="showPreview"
+      [progressFilled]="calc.progressFilled"
+      [progressTotal]="calc.progressTotal"
+      [progressPct]="calc.progressPct"
+      [systemId]="systemId"
+      [validationError]="validationError"
+      [submitError]="submitError"
+      [submitting]="submitting"
+      [hasSavedRecords]="savedRecords.length > 0"
+      (resetForm)="resetForm()"
+      (downloadJson)="downloadJson()"
+      (saveRecord)="saveRecord()"
+      (cancelAndClear)="cancelAndClear()"
+      (closePreview)="closePreview()"
+      (submitRecord)="submitRecord()">
+    </app-form-footer>
 
-        <div class="field-row cols-3">
-          <div class="field">
-            <label class="field-label">
-              <span class="fnum">#7</span>Рецептура
-              <span class="req-mark">★</span>
-            </label>
-            <select formControlName="recipe" class="inp">
-              <option value="">— выбрать —</option>
-              <option *ngFor="let r of recipeNames" [value]="r">{{ r }}</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">
-              <span class="fnum">#8</span>Жир рецептуры
-              <span class="req-mark">★</span>
-            </label>
-            <select formControlName="recipe_fat" class="inp">
-              <option value="">— выбрать —</option>
-              <option value="milk">Молочный</option>
-              <option value="vegetable">Растительный</option>
-              <option value="mixed">Смешанный</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">
-              <span class="fnum">#9</span>Измельчение
-              <span class="source">волокно</span>
-            </label>
-            <div class="check-wrap" [class.checked]="grindingDone" (click)="toggleGrinding()">
-              <div class="check-box">
-                <span *ngIf="grindingDone">✓</span>
-              </div>
-              <span>Измельчение проведено</span>
-            </div>
-          </div>
-        </div>
+    <!-- ═══ SAVED RECORDS ═══ -->
+    <app-saved-records
+      *ngIf="savedRecords.length > 0"
+      [savedRecords]="savedRecords"
+      (removeRecord)="removeRecord($event)">
+    </app-saved-records>
 
-      </div>
-    </section>
-
-    <!-- ── РАЗДЕЛ 02 · Кальята в котле ── -->
-    <section class="form-section" id="sec-02">
-      <div class="fs-head">
-        <span class="fs-num">02</span>
-        <span class="fs-title">Кальята в котле</span>
-        <span class="fs-meta">6 полей · замер из котла</span>
-      </div>
-      <div class="fs-body">
-        <div class="field-row cols-3">
-          <div class="field">
-            <label class="field-label">
-              <span class="fnum">#9</span>Масса кальяты по рецептуре
-              <span class="req-mark">★</span><span class="unit">кг</span>
-            </label>
-            <input formControlName="m_kalyata" class="inp numeric" type="number" step="0.1" min="50" max="300">
-            <span class="helper">внесено по рецептуре</span>
-          </div>
-          <div class="field">
-            <label class="field-label">
-              <span class="fnum">#10</span>pH кальяты
-              <span class="req-mark">★</span>
-            </label>
-            <input formControlName="ph_kalyata" class="inp numeric" [class]="'inp numeric ' + phStatus.cls"
-                   type="number" step="0.01" min="4.5" max="7.0">
-            <span [class]="phStatus.helperCls">{{ phStatus.helperText }}</span>
-          </div>
-          <div class="field">
-            <label class="field-label">
-              <span class="fnum">#11</span>Влажность кальяты
-              <span class="req-mark">★</span><span class="unit">% абс.</span>
-            </label>
-            <input formControlName="moisture_kalyata" class="inp numeric" [class]="'inp numeric ' + moistureStatus.cls"
-                   type="number" step="0.1" min="40" max="65">
-            <span [class]="moistureStatus.helperCls">{{ moistureStatus.helperText }}</span>
-          </div>
-        </div>
-        <div class="field-row cols-3">
-          <div class="field">
-            <label class="field-label">
-              <span class="fnum">#12</span>Жирность кальяты
-              <span class="req-mark">★</span><span class="unit">% на СВ</span>
-            </label>
-            <input formControlName="fat_kalyata" class="inp numeric" type="number" step="0.01" min="0" max="80">
-            <span class="helper">для обезжиренной ≈ 2% на СВ</span>
-          </div>
-          <div class="field">
-            <label class="field-label">
-              <span class="fnum">#13</span>Тип жира в кальяте
-              <span class="req-mark">★</span>
-            </label>
-            <select formControlName="kalyata_fat_type" class="inp">
-              <option value="">— выбрать —</option>
-              <option value="milk">Молочный</option>
-              <option value="vegetable">Растительный</option>
-              <option value="skim">Калята обезжиренная</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label">
-              <span class="fnum">#14</span>Казеин
-              <span class="unit">кг</span>
-            </label>
-            <input formControlName="m_casein" class="inp numeric" type="number" step="0.1" min="0" max="50">
-            <span class="helper">по нормативной документации</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── РАЗДЕЛ 03 · Внесение готового продукта ── -->
-    <section class="form-section" id="sec-03">
-      <div class="fs-head">
-        <span class="fs-num">03</span>
-        <span class="fs-title">Внесение готового продукта</span>
-        <span class="fs-meta">остаток · переварки</span>
-      </div>
-      <div class="fs-body">
-        <div class="field-row full">
-          <div class="field" style="max-width: 280px;">
-            <label class="field-label">
-              <span class="fnum">#15</span>Мёртвый остаток / Н₀
-              <span class="unit">кг</span>
-            </label>
-            <input formControlName="m_dead" class="inp numeric" [class]="'inp numeric ' + deadStatus.cls"
-                   type="number" step="0.1" min="0" max="20">
-            <span [class]="deadStatus.helperCls">{{ deadStatus.helperText }}</span>
-          </div>
-        </div>
-
-        <div class="field-divider">Переварки · возвратные партии</div>
-
-        <table class="perevar-tbl">
-          <thead>
-            <tr>
-              <th>Масса, кг</th>
-              <th>Наименование рецептуры</th>
-              <th>Влажность, %</th>
-              <th>Жирность, % СВ</th>
-              <th>Крахмал, %</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody formArrayName="perevary">
-            <tr *ngFor="let row of perevary.controls; let i = index" [formGroupName]="i">
-              <td data-label="Масса, кг">
-                <input formControlName="mass" class="inp numeric" type="number" min="0" max="100" step="0.1">
-              </td>
-              <td data-label="Рецептура">
-                <select formControlName="recipe" class="inp"
-                        (change)="onPerevarRecipeChange(i, $any($event.target).value)">
-                  <option value="">— выбрать —</option>
-                  <option *ngFor="let r of perevarRecipes" [value]="r">{{ r }}</option>
-                </select>
-              </td>
-              <td data-label="Влажность, %">
-                <input formControlName="moisture" class="inp numeric"
-                       [class.readonly]="!isPerevarCustom(i)"
-                       type="number" min="0" max="80" step="0.1"
-                       [readonly]="!isPerevarCustom(i)">
-              </td>
-              <td data-label="Жирность, % СВ">
-                <input formControlName="fat_sv" class="inp numeric"
-                       [class.readonly]="!isPerevarCustom(i)"
-                       type="number" min="0" max="80" step="0.1"
-                       [readonly]="!isPerevarCustom(i)">
-              </td>
-              <td data-label="Крахмал, %">
-                <input formControlName="starch" class="inp numeric"
-                       [class.readonly]="!isPerevarCustom(i)"
-                       type="number" min="0" max="50" step="0.1"
-                       [readonly]="!isPerevarCustom(i)">
-              </td>
-              <td>
-                <button type="button" class="del-btn" title="Удалить" (click)="removePerevar(i)">×</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <button type="button" class="add-row-btn" (click)="addPerevar()">+ Добавить переварку</button>
-        <div class="helper" style="margin-top:8px">
-          Стандартные рецептуры подтягивают параметры автоматически. Custom — ручной ввод
-        </div>
-      </div>
-    </section>
-
-    <!-- ── РАЗДЕЛ 04 · Жировая фаза ── -->
-    <section class="form-section" id="sec-04">
-      <div class="fs-head">
-        <span class="fs-num">04</span>
-        <span class="fs-title">Жировая фаза</span>
-        <span class="fs-meta">по внешним весам</span>
-      </div>
-      <div class="fs-body">
-        <table class="perevar-tbl" formArrayName="fats">
-          <thead>
-            <tr>
-              <th>Тип жира</th>
-              <th>Масса, кг</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let row of fats.controls; let i = index" [formGroupName]="i">
-              <td data-label="Тип жира">
-                <select formControlName="type" class="inp">
-                  <option value="">— выбрать —</option>
-                  <option *ngFor="let ft of fatTypes" [value]="ft.value">{{ ft.label }}</option>
-                </select>
-              </td>
-              <td data-label="Масса, кг">
-                <input formControlName="mass" class="inp numeric" type="number" min="0" max="100" step="0.1">
-              </td>
-              <td>
-                <button type="button" class="del-btn" (click)="removeFat(i)">×</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <button type="button" class="add-row-btn" [disabled]="fats.length >= fatLimit" (click)="addFat()">
-          + Добавить жир
-        </button>
-        <span class="helper" style="margin-left:8px">макс. {{ fatLimit }} позиции</span>
-      </div>
-    </section>
-
-    <!-- ── РАЗДЕЛ 05 · Гидроколлоид и соли ── -->
-    <section class="form-section" id="sec-05">
-      <div class="fs-head">
-        <span class="fs-num">05</span>
-        <span class="fs-title">Гидроколлоид и соли</span>
-        <span class="fs-meta">соли-плавители · крахмал · NaCl</span>
-      </div>
-      <div class="fs-body">
-        <div class="field-divider">Соли-плавители</div>
-        <table class="perevar-tbl" formArrayName="emulsifiers">
-          <thead>
-            <tr><th>Тип</th><th>Масса, кг</th><th></th></tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let row of emulsifiers.controls; let i = index" [formGroupName]="i">
-              <td data-label="Тип">
-                <select formControlName="type" class="inp">
-                  <option value="">— выбрать —</option>
-                  <option *ngFor="let et of emulsifierTypes" [value]="et.value">{{ et.label }}</option>
-                </select>
-              </td>
-              <td data-label="Масса, кг">
-                <input formControlName="mass" class="inp numeric" type="number" min="0" max="10" step="0.01">
-              </td>
-              <td>
-                <button type="button" class="del-btn" (click)="removeEmulsifier(i)">×</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <button type="button" class="add-row-btn" [disabled]="emulsifiers.length >= emulsLimit" (click)="addEmulsifier()">
-          + Добавить соль-плавитель
-        </button>
-
-        <div class="field-divider">Крахмал и соль</div>
-        <div class="field-row">
-          <div class="field">
-            <label class="field-label">Крахмал — тип и масса</label>
-            <div class="compound">
-              <select formControlName="starch_type" class="inp">
-                <option value="kmc_high_melt">KMC High Melt</option>
-                <option value="other">Другой крахмал</option>
-              </select>
-              <input formControlName="m_starch" class="inp numeric" type="number" step="0.1" min="0" max="50" placeholder="кг">
-            </div>
-          </div>
-          <div class="field">
-            <label class="field-label">
-              Соль пищевая NaCl
-              <span class="unit">кг</span>
-            </label>
-            <input formControlName="m_salt" class="inp numeric" [class]="'inp numeric ' + saltStatus.cls"
-                   type="number" step="0.01" min="0" max="10">
-            <span [class]="saltStatus.helperCls">{{ saltStatus.helperText }}</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── РАЗДЕЛ 06 · Микро и вода ── -->
-    <section class="form-section" id="sec-06">
-      <div class="fs-head">
-        <span class="fs-num">06</span>
-        <span class="fs-title">Микро и вода</span>
-        <span class="fs-meta">консервант · прочее · вода</span>
-      </div>
-      <div class="fs-body">
-        <div class="field-row">
-          <div class="field">
-            <label class="field-label">Консервант <span class="unit">кг</span></label>
-            <input formControlName="m_preservative" class="inp numeric" type="number" step="0.01" min="0" max="5">
-          </div>
-          <div class="field">
-            <label class="field-label">Прочие ингредиенты <span class="unit">кг</span></label>
-            <input formControlName="m_other" class="inp numeric" type="number" step="0.01" min="0" max="20">
-          </div>
-        </div>
-
-        <div class="field-divider">Вода</div>
-        <div class="water-block">
-          <div class="water-row">
-            <div class="field">
-              <label class="field-label">Вода прямого залива <span class="unit">кг</span></label>
-              <input formControlName="m_direct_water" class="inp numeric" type="number" step="0.1" min="0" max="150">
-            </div>
-            <div class="field">
-              <label class="field-label">Вода в виде пара <span class="unit">кг</span></label>
-              <input formControlName="m_steam_water" class="inp numeric" [class]="'inp numeric ' + steamStatus.cls"
-                     type="number" step="0.1" min="0" max="100">
-              <span [class]="steamStatus.helperCls">{{ steamStatus.helperText }}</span>
-            </div>
-            <div class="water-sum">
-              <div class="water-sum-lbl">Σ контр. сумма</div>
-              <div class="water-sum-val">{{ fmt(waterSum, 1) }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── РАЗДЕЛ 07 · Хронология варки ── -->
-    <section class="form-section" id="sec-07">
-      <div class="fs-head">
-        <span class="fs-num">07</span>
-        <span class="fs-title">Хронология варки</span>
-        <span class="fs-meta">времена · температуры</span>
-      </div>
-      <div class="fs-body">
-        <div class="field-row">
-          <div class="field">
-            <label class="field-label">
-              Время начала загрузки в СМ
-              <span class="req-mark">★</span>
-            </label>
-            <input formControlName="t_load" class="inp" type="time">
-          </div>
-          <div class="field">
-            <label class="field-label">
-              Время начала выгрузки
-              <span class="req-mark">★</span>
-            </label>
-            <input formControlName="t_unload" class="inp" type="time">
-          </div>
-        </div>
-
-        <div class="field-divider">Температуры</div>
-        <div class="field-row cols-3">
-          <div class="field">
-            <label class="field-label">
-              T₁ Перед подачей пара
-              <span class="req-mark">★</span><span class="unit">°C</span>
-            </label>
-            <input formControlName="T1" class="inp numeric" type="number" step="0.1" min="0" max="100">
-          </div>
-          <div class="field">
-            <label class="field-label">
-              T₂ Максимальная
-              <span class="req-mark">★</span><span class="unit">°C</span>
-            </label>
-            <input formControlName="T2" class="inp numeric" [class]="'inp numeric ' + t2Status.cls"
-                   type="number" step="0.1" min="0" max="80">
-            <span [class]="t2Status.helperCls">{{ t2Status.helperText }}</span>
-          </div>
-          <div class="field">
-            <label class="field-label">
-              T₃ Перед выпуском
-              <span class="req-mark">★</span><span class="unit">°C</span>
-            </label>
-            <input formControlName="T3" class="inp numeric" type="number" step="0.1" min="0" max="80">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── РАЗДЕЛ 08 · Контроль масс ── -->
-    <section class="form-section" id="sec-08">
-      <div class="fs-head">
-        <span class="fs-num">08</span>
-        <span class="fs-title">Контроль масс</span>
-        <span class="fs-meta">тензометрия + внешние весы</span>
-      </div>
-      <div class="fs-body">
-        <div class="mass-block">
-          <div class="mass-cell">
-            <span class="mc-code">Н₀</span>
-            <span class="mc-name">Мёртвый остаток до загрузки</span>
-            <input class="inp numeric readonly" [value]="M1show" readonly>
-            <span class="helper">из раздела 03</span>
-          </div>
-          <div class="mass-cell">
-            <span class="mc-code">М₃</span>
-            <span class="mc-name">Все ингредиенты до пара</span>
-            <input formControlName="M3" class="inp numeric" [class]="'inp numeric ' + m3Status.cls"
-                   type="number" step="0.1" min="0" max="400">
-            <span [class]="m3Status.helperCls">{{ m3Status.helperText }}</span>
-          </div>
-          <div class="mass-cell">
-            <span class="mc-code">М₄</span>
-            <span class="mc-name">Перед выпуском</span>
-            <input formControlName="M4" class="inp numeric" type="number" step="0.1" min="0" max="450">
-            <span class="helper">тензометрия котла</span>
-          </div>
-          <div class="mass-cell">
-            <span class="mc-code">М₅</span>
-            <span class="mc-name">Перед водным охлаждением</span>
-            <input formControlName="M5" class="inp numeric" type="number" step="0.1" min="0" max="450">
-            <span class="helper">внешние весы</span>
-          </div>
-          <div class="mass-cell">
-            <span class="mc-code">N</span>
-            <span class="mc-name">Количество блоков</span>
-            <input formControlName="N" class="inp numeric" type="number" step="1" min="0" max="40">
-            <span class="helper">шт</span>
-          </div>
-        </div>
-
-        <div class="field-row" style="margin-top: 18px;">
-          <div class="field">
-            <label class="field-label">
-              Время взвешивания после воздушного охлаждения
-              <span class="req-mark">★</span>
-            </label>
-            <input formControlName="t_weighing" class="inp" type="time">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── РАЗДЕЛ 09 · Контроль соответствия ── -->
-    <section class="form-section" id="sec-09">
-      <div class="fs-head">
-        <span class="fs-num">09</span>
-        <span class="fs-title">Контроль соответствия рецептуре</span>
-        <span class="fs-meta">soft-warnings · допуск ±2%</span>
-      </div>
-      <div class="fs-body">
-
-        <!-- Returnable recap -->
-        <div class="recap-box" [class.ok-box]="returnableOk" [class.warn-box]="!returnableOk">
-          <div>
-            <div class="recap-title">Контроль массы возврата</div>
-            <div class="recap-detail">{{ returnableDetail }}</div>
-            <div class="helper" style="margin-top:6px">лимит: ≤ 5% от веса всей варки</div>
-          </div>
-          <div class="recap-pct" [class.warn-pct]="!returnableOk">{{ fmt(returnablePct, 1) }}%</div>
-        </div>
-
-        <!-- Level 1 – ingredient masses -->
-        <div class="ctl-section" style="margin-top: 18px;">
-          <div class="ctl-title">Соответствие рецептуре</div>
-          <div *ngIf="recipeCtlNoRecipe" class="ctl-empty">
-            Выберите рецептуру в разделе 01 — расчёт обновится автоматически
-          </div>
-          <div *ngIf="recipeCtlIsCustom" class="ctl-empty">
-            Custom-рецептура: контроль соответствия не применяется
-          </div>
-
-          <ng-container *ngIf="!recipeCtlNoRecipe && !recipeCtlIsCustom">
-            <div class="ctl-subtitle">Уровень 1 — массы ингредиентов</div>
-            <table class="ctl-tbl">
-              <thead>
-                <tr>
-                  <th>Категория</th>
-                  <th class="num">Рецепт, кг</th>
-                  <th class="num">Факт, кг</th>
-                  <th class="num">Δ, кг</th>
-                  <th class="num">Δ, %</th>
-                  <th>Статус</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let row of recipeCtlLevel1" [class]="row.cls">
-                  <td>{{ row.label }}</td>
-                  <td class="num">{{ fmt(row.norm, 2) }}</td>
-                  <td class="num">{{ fmt(row.fact, 2) }}</td>
-                  <td class="num">{{ fmtDelta(row.delta, 2) }}</td>
-                  <td class="num">{{ row.norm > 0 ? fmt(row.devPct, 1) : '—' }}</td>
-                  <td><span class="badge" [class]="'badge ' + row.cls">{{ row.badge }}</span></td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div *ngIf="!showRecipeCtlLevel2 && recipeCtlNote" class="helper warn-txt" style="margin-top:10px; padding:10px; background:var(--warn-bg); border:1px solid var(--warn);">
-              {{ recipeCtlNote }}
-            </div>
-
-            <ng-container *ngIf="showRecipeCtlLevel2">
-              <div class="ctl-subtitle" style="margin-top: 18px;">Уровень 2 — пропорции готового продукта</div>
-              <table class="ctl-tbl">
-                <thead>
-                  <tr>
-                    <th>Компонент</th>
-                    <th class="num">Рецепт, %</th>
-                    <th class="num">Факт, %</th>
-                    <th class="num">Δ, п.п.</th>
-                    <th>Статус</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let row of recipeCtlLevel2" [class]="row.cls">
-                    <td>{{ row.label }}</td>
-                    <td class="num">{{ fmt(row.norm, 1) }}</td>
-                    <td class="num">{{ fmt(row.fact, 1) }}</td>
-                    <td class="num">{{ fmtDelta(row.delta, 1) }}</td>
-                    <td><span class="badge" [class]="'badge ' + row.cls">{{ row.badge }}</span></td>
-                  </tr>
-                </tbody>
-              </table>
-              <div class="helper" style="margin-top:8px">{{ recipeCtlNote }}</div>
-            </ng-container>
-          </ng-container>
-        </div>
-
-      </div>
-    </section>
-
-  </main>
-
-  <!-- ═══ PREVIEW PANEL ═══ -->
-  <main class="form-main preview-panel" *ngIf="showPreview">
-    <div class="preview-head">
-      <span class="preview-head-title">Проверка данных перед отправкой</span>
-      <span class="preview-head-id">{{ systemId }}</span>
-    </div>
-    <div class="form-section preview-sec" *ngFor="let sec of previewSections">
-      <div class="fs-head">
-        <span class="fs-num">{{ sec.title.slice(0, 2) }}</span>
-        <span class="fs-title">{{ sec.title.slice(5) }}</span>
-      </div>
-      <div class="fs-body">
-        <table class="preview-tbl">
-          <tr *ngFor="let row of sec.rows">
-            <td class="preview-tbl-label">{{ row.label }}</td>
-            <td class="preview-tbl-val">{{ row.value }}</td>
-          </tr>
-        </table>
-      </div>
-    </div>
-  </main>
-
-  <!-- ═══ RIGHT CALC SIDEBAR ═══ -->
-  <aside class="calc-side">
-    <div class="cs-block">
-      <h4>Балансы в реальном времени</h4>
-      <div class="balance-row">
-        <span class="b-name">Масса всей варки</span>
-        <span class="b-val">{{ fmt(balTotal, 1) }} кг</span>
-      </div>
-      <div class="balance-row">
-        <span class="b-name">Σ ингредиентов</span>
-        <span class="b-val">{{ fmt(balIngredients, 1) }} кг</span>
-      </div>
-      <div class="balance-row">
-        <span class="b-name">Σ воды</span>
-        <span class="b-val">{{ fmt(waterSum, 1) }} кг</span>
-      </div>
-      <div class="balance-row" [class.warn]="!returnableOk" [class.ok]="returnableOk && balTotal > 0">
-        <span class="b-name">Возврат</span>
-        <span class="b-val">{{ balReturnableStr }}</span>
-      </div>
-    </div>
-
-    <div class="cs-block">
-      <h4>Сводка</h4>
-      <div class="totals-grid">
-        <div class="t-lbl">Переварки</div><div class="t-val">{{ totPerevary }}</div>
-        <div class="t-lbl">Жиры</div><div class="t-val">{{ totFats }}</div>
-        <div class="t-lbl">Соли-плавители</div><div class="t-val">{{ totEmuls }}</div>
-        <div class="t-lbl">Записей сохранено</div><div class="t-val">{{ savedRecords.length }}</div>
-      </div>
-    </div>
-
-    <div class="cs-block">
-      <h4>Активные предупреждения</h4>
-      <ul class="warnings-list">
-        <li *ngIf="warnings.length === 0" class="empty">Нет активных предупреждений</li>
-        <li *ngFor="let w of warnings" class="w-soft">{{ w }}</li>
-      </ul>
-    </div>
-  </aside>
-
-  <!-- ═══ FOOTER ═══ -->
-  <div class="form-foot">
-    <div class="foot-meta">
-      <ng-container *ngIf="!showPreview">черновик · {{ progressFilled }}/{{ progressTotal }} полей · {{ progressPct }}%</ng-container>
-      <ng-container *ngIf="showPreview">просмотр · {{ systemId }}</ng-container>
-    </div>
-    <span *ngIf="validationError && !showPreview" class="foot-error">{{ validationError }}</span>
-    <span *ngIf="submitError && showPreview" class="foot-error">{{ submitError }}</span>
-    <div class="foot-actions">
-      <ng-container *ngIf="!showPreview">
-        <button type="button" class="btn" (click)="resetForm()">Очистить</button>
-        <button type="button" class="btn" (click)="downloadJson()" [disabled]="!savedRecords.length">Скачать JSON</button>
-        <button type="button" class="btn primary" (click)="saveRecord()">Сохранить запись</button>
-      </ng-container>
-      <ng-container *ngIf="showPreview">
-        <button type="button" class="btn modal-btn-cancel" (click)="cancelAndClear()">Отменить и очистить</button>
-        <button type="button" class="btn" (click)="closeModal()">Исправить</button>
-        <button type="button" class="btn primary" (click)="submitRecord()" [disabled]="submitting">
-          {{ submitting ? 'Отправка...' : 'Отправить' }}
-        </button>
-      </ng-container>
-    </div>
   </div>
-
-  <!-- ═══ SAVED RECORDS ═══ -->
-  <section class="saved-records" *ngIf="savedRecords.length > 0">
-    <h3>Сохранённые записи · <span>{{ savedRecords.length }}</span></h3>
-    <table class="records-tbl">
-      <thead>
-        <tr>
-          <th>ID</th><th>Оператор</th><th>СМ</th><th>Рецепт</th>
-          <th>Жир</th><th>М₅</th><th>N</th><th>Время</th><th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let r of savedRecords; let i = index">
-          <td>{{ r.system_id }}</td>
-          <td>{{ r.operator || '—' }}</td>
-          <td>{{ r.machine || '—' }}</td>
-          <td>{{ r.recipe || '—' }}</td>
-          <td>{{ r.recipe_fat === 'milk' ? 'мол.' : r.recipe_fat === 'vegetable' ? 'раст.' : 'смеш.' }}</td>
-          <td>{{ r.M5 || '—' }}</td>
-          <td>{{ r.N || '—' }}</td>
-          <td>{{ r.saved_at | date:'HH:mm' }}</td>
-          <td><button type="button" class="del-btn" (click)="removeRecord(i)">×</button></td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-
-</div>
 </form>
-

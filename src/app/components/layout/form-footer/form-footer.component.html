@@ -1,0 +1,22 @@
+<div class="form-foot">
+  <div class="foot-meta">
+    <ng-container *ngIf="!showPreview">черновик · {{ progressFilled }}/{{ progressTotal }} полей · {{ progressPct }}%</ng-container>
+    <ng-container *ngIf="showPreview">просмотр · {{ systemId }}</ng-container>
+  </div>
+  <span *ngIf="validationError && !showPreview" class="foot-error">{{ validationError }}</span>
+  <span *ngIf="submitError && showPreview"       class="foot-error">{{ submitError }}</span>
+  <div class="foot-actions">
+    <ng-container *ngIf="!showPreview">
+      <button type="button" class="btn" (click)="resetForm.emit()">Очистить</button>
+      <button type="button" class="btn" (click)="downloadJson.emit()" [disabled]="!hasSavedRecords">Скачать JSON</button>
+      <button type="button" class="btn primary" (click)="saveRecord.emit()">Сохранить запись</button>
+    </ng-container>
+    <ng-container *ngIf="showPreview">
+      <button type="button" class="btn modal-btn-cancel" (click)="cancelAndClear.emit()">Отменить и очистить</button>
+      <button type="button" class="btn" (click)="closePreview.emit()">Исправить</button>
+      <button type="button" class="btn primary" (click)="submitRecord.emit()" [disabled]="submitting">
+        {{ submitting ? 'Отправка...' : 'Отправить' }}
+      </button>
+    </ng-container>
+  </div>
+</div>

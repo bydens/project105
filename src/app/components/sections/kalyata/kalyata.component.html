@@ -1,0 +1,47 @@
+<section class="form-section" id="sec-02">
+  <div class="fs-head">
+    <span class="fs-num">02</span>
+    <span class="fs-title">Калька в котле</span>
+    <span class="fs-meta">6 полей · замер из котла</span>
+  </div>
+  <div class="fs-body">
+    <div class="field-row cols-3">
+      <div class="field">
+        <label class="field-label"><span class="fnum">#9</span>Масса кальяты по рецептуре<span class="req-mark">★</span><span class="unit">кг</span></label>
+        <input formControlName="m_kalyata" class="inp numeric" type="number" step="0.1" min="50" max="300">
+        <span class="helper">внесено по рецептуре</span>
+      </div>
+      <div class="field">
+        <label class="field-label"><span class="fnum">#10</span>pH кальяты<span class="req-mark">★</span></label>
+        <input formControlName="ph_kalyata" [class]="'inp numeric ' + phStatus.cls" type="number" step="0.01" min="4.5" max="7.0">
+        <span [class]="phStatus.helperCls">{{ phStatus.helperText }}</span>
+      </div>
+      <div class="field">
+        <label class="field-label"><span class="fnum">#11</span>Влажность кальяты<span class="req-mark">★</span><span class="unit">% абс.</span></label>
+        <input formControlName="moisture_kalyata" [class]="'inp numeric ' + moistureStatus.cls" type="number" step="0.1" min="40" max="65">
+        <span [class]="moistureStatus.helperCls">{{ moistureStatus.helperText }}</span>
+      </div>
+    </div>
+    <div class="field-row cols-3">
+      <div class="field">
+        <label class="field-label"><span class="fnum">#12</span>Жирность кальяты<span class="req-mark">★</span><span class="unit">% на СВ</span></label>
+        <input formControlName="fat_kalyata" class="inp numeric" type="number" step="0.01" min="0" max="80">
+        <span class="helper">для обезжиренной ≈ 2% на СВ</span>
+      </div>
+      <div class="field">
+        <label class="field-label"><span class="fnum">#13</span>Тип жира в кальяте<span class="req-mark">★</span></label>
+        <select formControlName="kalyata_fat_type" class="inp">
+          <option value="">— выбрать —</option>
+          <option value="milk">Молочный</option>
+          <option value="vegetable">Растительный</option>
+          <option value="skim">Калята обезжиренная</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label"><span class="fnum">#14</span>Казеин<span class="unit">кг</span></label>
+        <input formControlName="m_casein" class="inp numeric" type="number" step="0.1" min="0" max="50">
+        <span class="helper">по нормативной документации</span>
+      </div>
+    </div>
+  </div>
+</section>

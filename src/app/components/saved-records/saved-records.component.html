@@ -1,0 +1,24 @@
+<section class="saved-records">
+  <h3>Сохранённые записи · <span>{{ savedRecords.length }}</span></h3>
+  <table class="records-tbl">
+    <thead>
+      <tr>
+        <th>ID</th><th>Оператор</th><th>СМ</th><th>Рецепт</th>
+        <th>Жир</th><th>М₅</th><th>N</th><th>Время</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let r of savedRecords; let i = index">
+        <td>{{ r.system_id }}</td>
+        <td>{{ r.operator || '—' }}</td>
+        <td>{{ r.machine  || '—' }}</td>
+        <td>{{ r.recipe   || '—' }}</td>
+        <td>{{ fatLabel(r.recipe_fat) }}</td>
+        <td>{{ r.M5 ?? '—' }}</td>
+        <td>{{ r.N  ?? '—' }}</td>
+        <td>{{ r.saved_at | date:'HH:mm' }}</td>
+        <td><button type="button" class="del-btn" (click)="removeRecord.emit(i)">×</button></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
