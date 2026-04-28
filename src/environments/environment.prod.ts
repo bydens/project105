@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  pbUrl: '',
+  pbUrl: 'https://db.bydens.net',
 };
