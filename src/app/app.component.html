@@ -20,7 +20,7 @@
 <div class="form-shell">
 
   <!-- ═══ MAIN CONTENT ═══ -->
-  <main class="form-main">
+  <main class="form-main" *ngIf="!showPreview">
 
     <!-- ── РАЗДЕЛ 01 · Идентификация ── -->
     <section class="form-section" id="sec-01">
@@ -612,6 +612,28 @@
 
   </main>
 
+  <!-- ═══ PREVIEW PANEL ═══ -->
+  <main class="form-main preview-panel" *ngIf="showPreview">
+    <div class="preview-head">
+      <span class="preview-head-title">Проверка данных перед отправкой</span>
+      <span class="preview-head-id">{{ systemId }}</span>
+    </div>
+    <div class="form-section preview-sec" *ngFor="let sec of previewSections">
+      <div class="fs-head">
+        <span class="fs-num">{{ sec.title.slice(0, 2) }}</span>
+        <span class="fs-title">{{ sec.title.slice(5) }}</span>
+      </div>
+      <div class="fs-body">
+        <table class="preview-tbl">
+          <tr *ngFor="let row of sec.rows">
+            <td class="preview-tbl-label">{{ row.label }}</td>
+            <td class="preview-tbl-val">{{ row.value }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </main>
+
   <!-- ═══ RIGHT CALC SIDEBAR ═══ -->
   <aside class="calc-side">
     <div class="cs-block">
@@ -656,13 +678,24 @@
   <!-- ═══ FOOTER ═══ -->
   <div class="form-foot">
     <div class="foot-meta">
-      черновик · {{ progressFilled }}/{{ progressTotal }} полей · {{ progressPct }}%
+      <ng-container *ngIf="!showPreview">черновик · {{ progressFilled }}/{{ progressTotal }} полей · {{ progressPct }}%</ng-container>
+      <ng-container *ngIf="showPreview">просмотр · {{ systemId }}</ng-container>
     </div>
-    <span *ngIf="validationError" class="foot-error">{{ validationError }}</span>
+    <span *ngIf="validationError && !showPreview" class="foot-error">{{ validationError }}</span>
+    <span *ngIf="submitError && showPreview" class="foot-error">{{ submitError }}</span>
     <div class="foot-actions">
-      <button type="button" class="btn" (click)="resetForm()">Очистить</button>
-      <button type="button" class="btn" (click)="downloadJson()" [disabled]="!savedRecords.length">Скачать JSON</button>
-      <button type="button" class="btn primary" (click)="saveRecord()">Сохранить запись</button>
+      <ng-container *ngIf="!showPreview">
+        <button type="button" class="btn" (click)="resetForm()">Очистить</button>
+        <button type="button" class="btn" (click)="downloadJson()" [disabled]="!savedRecords.length">Скачать JSON</button>
+        <button type="button" class="btn primary" (click)="saveRecord()">Сохранить запись</button>
+      </ng-container>
+      <ng-container *ngIf="showPreview">
+        <button type="button" class="btn modal-btn-cancel" (click)="cancelAndClear()">Отменить и очистить</button>
+        <button type="button" class="btn" (click)="closeModal()">Исправить</button>
+        <button type="button" class="btn primary" (click)="submitRecord()" [disabled]="submitting">
+          {{ submitting ? 'Отправка...' : 'Отправить' }}
+        </button>
+      </ng-container>
     </div>
   </div>
 
@@ -694,3 +727,4 @@
 
 </div>
 </form>
+

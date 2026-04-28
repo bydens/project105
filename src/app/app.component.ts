@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators
 } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
@@ -37,6 +38,10 @@ const PROTEIN_FRACTION_OF_NONFAT_DM = 0.93;
 const CASEIN_PROTEIN_FRACTION = 0.88;
 const FAT_LIMIT = 2;
 const EMULSIFIER_LIMIT = 4;
+const API_URL = '/api/batches';
+
+export interface PreviewRow { label: string; value: string; }
+export interface PreviewSection { title: string; rows: PreviewRow[]; }
 
 export interface FieldStatus { cls: string; helperText: string; helperCls: string; }
 export interface CtlRow { label: string; norm: number; fact: number; delta: number; devPct: number; cls: string; badge: string; }
@@ -80,6 +85,10 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   m3Status: FieldStatus     = { cls: '', helperText: 'тензометрия котла', helperCls: 'helper' };
 
   validationError = '';
+  showPreview = false;
+  previewSections: PreviewSection[] = [];
+  submitting = false;
+  submitError = '';
 
   // Computed values
   waterSum = 0;
@@ -106,7 +115,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private dailyCounter: Record<string, number> = {};
 
-  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef) {}
+  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef, private http: HttpClient) {}
 
   ngOnInit(): void {
     const today = new Date();
@@ -566,7 +575,51 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     this.validationError = '';
+    this.previewSections = this.buildPreviewSections();
+    this.submitError = '';
+    this.showPreview = true;
+  }
+
+  closeModal(): void {
+    this.showPreview = false;
+  }
+
+  cancelAndClear(): void {
+    this.showPreview = false;
+    this.validationError = '';
+    this.form.markAsUntouched();
+    const iso = this.toIsoDate(new Date());
+    this.form.reset({
+      brew_date: iso, source_kalyata: 'stab_bath', starch_type: 'kmc_high_melt',
+      grinding_done: true, m_dead: 5, m_casein: '', m_starch: '', m_salt: '',
+      m_preservative: '', m_other: '', m_direct_water: '', m_steam_water: ''
+    });
+    while (this.perevary.length) this.perevary.removeAt(0);
+    while (this.fats.length) this.fats.removeAt(0);
+    while (this.emulsifiers.length) this.emulsifiers.removeAt(0);
+    this.fats.push(this.createFatGroup());
+    this.emulsifiers.push(this.createEmulsifierGroup());
+    this.regenerateSystemId();
+    this.recalc();
+  }
+
+  submitRecord(): void {
     const record = { ...this.form.getRawValue(), system_id: this.systemId, saved_at: new Date().toISOString() };
+    this.submitting = true;
+    this.submitError = '';
+    this.http.post(API_URL, record).subscribe({
+      next: () => this.finalizeSubmit(record),
+      error: (err: unknown) => {
+        this.submitting = false;
+        const e = err as { status?: number; statusText?: string; message?: string };
+        this.submitError = `Ошибка отправки: ${e.status ? e.status + ' ' : ''}${e.statusText || e.message || 'нет ответа от сервера'}`.trim();
+      }
+    });
+  }
+
+  private finalizeSubmit(record: Record<string, unknown>): void {
+    this.submitting = false;
+    this.showPreview = false;
     this.savedRecords.push(record);
     const ds = this.toYMD(new Date());
     this.dailyCounter[ds] = (this.dailyCounter[ds] || 0) + 1;
@@ -574,6 +627,86 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     this.form.markAsUntouched();
     this.regenerateSystemId();
     this.recalc();
+  }
+
+  private buildPreviewSections(): PreviewSection[] {
+    const v = this.form.getRawValue();
+    const r = (label: string, value: unknown, unit = ''): PreviewRow => {
+      const s = (value !== null && value !== undefined && value !== '') ? String(value) : '';
+      return { label, value: s ? (unit ? `${s} ${unit}` : s) : '—' };
+    };
+
+    const recipeFatMap: Record<string, string> = { milk: 'Молочный', vegetable: 'Растительный', mixed: 'Смешанный' };
+    const kalyataFatMap: Record<string, string> = { milk: 'Молочный', vegetable: 'Растительный', skim: 'Калята обезжиренная' };
+    const sourceMap: Record<string, string> = { stab_bath: 'Из ванны стабилизации', storage: 'Со склада' };
+
+    const s01: PreviewSection = { title: '01 · Идентификация варки', rows: [
+      r('Системный ID', this.systemId),
+      r('Дата варки', v['brew_date']),
+      r('Оператор', v['operator']),
+      r('Стрейчмарина', v['machine']),
+      r('Источник кальяты', sourceMap[v['source_kalyata']] ?? v['source_kalyata']),
+      r('Рецептура', v['recipe']),
+      r('Жир рецептуры', recipeFatMap[v['recipe_fat']] ?? v['recipe_fat']),
+      r('Измельчение', v['grinding_done'] ? 'Да' : 'Нет'),
+    ]};
+    if (v['free_id']) s01.rows.push(r('Свободный ID', v['free_id']));
+
+    const s02: PreviewSection = { title: '02 · Кальята в котле', rows: [
+      r('Масса кальяты', v['m_kalyata'], 'кг'),
+      r('pH кальяты', v['ph_kalyata']),
+      r('Влажность кальяты', v['moisture_kalyata'], '%'),
+      r('Жирность кальяты (% на СВ)', v['fat_kalyata'], '%'),
+      r('Тип жира в кальяте', kalyataFatMap[v['kalyata_fat_type']] ?? v['kalyata_fat_type']),
+    ]};
+    if (v['m_casein']) s02.rows.push(r('Казеин', v['m_casein'], 'кг'));
+
+    const s03: PreviewSection = { title: '03 · Возвратное сырьё', rows: [r('Мёртвый остаток (Н₀)', v['m_dead'], 'кг')] };
+    (v['perevary'] as Record<string, unknown>[]).forEach((p, i) => {
+      if (p['mass']) s03.rows.push(r(`Переварка ${i + 1}`, `${p['mass']} кг · ${p['recipe'] || '?'}`));
+    });
+
+    const s04: PreviewSection = { title: '04 · Жировая фаза', rows: [] };
+    (v['fats'] as Record<string, unknown>[]).forEach((f, i) => {
+      if (f['mass']) {
+        const label = FAT_TYPES.find(x => x.value === f['type'])?.label ?? String(f['type']);
+        s04.rows.push(r(`Жир ${i + 1}: ${label}`, f['mass'], 'кг'));
+      }
+    });
+
+    const s05: PreviewSection = { title: '05 · Гидроколлоид и соли', rows: [] };
+    (v['emulsifiers'] as Record<string, unknown>[]).forEach((e, i) => {
+      if (e['mass']) {
+        const label = EMULSIFIER_TYPES.find(x => x.value === e['type'])?.label ?? String(e['type']);
+        s05.rows.push(r(`Соль-плавитель ${i + 1}: ${label}`, e['mass'], 'кг'));
+      }
+    });
+    if (v['m_starch']) s05.rows.push(r('Крахмал', v['m_starch'], 'кг'));
+    if (v['m_salt']) s05.rows.push(r('Соль NaCl', v['m_salt'], 'кг'));
+
+    const s06: PreviewSection = { title: '06 · Микро и вода', rows: [] };
+    if (v['m_preservative']) s06.rows.push(r('Консервант', v['m_preservative'], 'кг'));
+    if (v['m_other']) s06.rows.push(r('Прочие ингредиенты', v['m_other'], 'кг'));
+    s06.rows.push(r('Вода прямого залива', v['m_direct_water'], 'кг'));
+    s06.rows.push(r('Вода в виде пара', v['m_steam_water'], 'кг'));
+
+    const s07: PreviewSection = { title: '07 · Хронология варки', rows: [
+      r('Начало загрузки в СМ', v['t_load']),
+      r('Начало выгрузки', v['t_unload']),
+      r('T₁ (перед паром)', v['T1'], '°C'),
+      r('T₂ (максимальная)', v['T2'], '°C'),
+      r('T₃ (перед выпуском)', v['T3'], '°C'),
+    ]};
+
+    const s08: PreviewSection = { title: '08 · Контроль масс', rows: [
+      r('М₃ (до пара)', v['M3'], 'кг'),
+      r('М₄ (перед выпуском)', v['M4'], 'кг'),
+      r('М₅ (перед охлаждением)', v['M5'], 'кг'),
+      r('N (количество блоков)', v['N']),
+      r('Время взвешивания', v['t_weighing']),
+    ]};
+
+    return [s01, s02, s03, s04, s05, s06, s07, s08];
   }
 
   resetForm(): void {
