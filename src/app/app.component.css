@@ -45,7 +45,6 @@
 .meta strong { color: var(--paper); font-weight: 500; }
 
 /* ── Header nav ── */
-.head-slim { justify-content: flex-start; }
 .head-nav { display: flex; gap: 4px; }
 .nav-link {
   font-family: var(--font-mono); font-size: 12px; letter-spacing: 1.2px; text-transform: uppercase;

@@ -8,13 +8,7 @@ export type AppPage = 'form' | 'records';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <header class="global-head" [class.head-slim]="currentPage !== 'form'">
-      <ng-container *ngIf="currentPage === 'form'">
-        <div class="brand">
-          <span class="logo">Pizza C Claude</span>
-          <span class="sub"><strong>F3 · Варка моцареллы</strong> · Блок 07 ТП</span>
-        </div>
-      </ng-container>
+    <header class="global-head">
       <nav class="head-nav">
         <button
           class="nav-link"
@@ -32,6 +26,10 @@ export type AppPage = 'form' | 'records';
         </button>
       </nav>
       <ng-container *ngIf="currentPage === 'form'">
+        <div class="brand">
+          <span class="logo">Pizza C Claude</span>
+          <span class="sub"><strong>F3 · Варка моцареллы</strong> · Блок 07 ТП</span>
+        </div>
         <div class="meta">
           <div>Линия <strong>Pizza C Claude</strong></div>
           <div>Стрейчмарины СМ-1 / СМ-2</div>
