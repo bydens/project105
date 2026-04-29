@@ -44,6 +44,41 @@
 .meta { font-family: var(--font-mono); font-size: 12px; color: var(--g3); letter-spacing: 1px; text-transform: uppercase; text-align: right; line-height: 1.5; }
 .meta strong { color: var(--paper); font-weight: 500; }
 
+/* ── Header nav ── */
+.head-nav { display: flex; gap: 4px; }
+.nav-link {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--g3); padding: 6px 16px; cursor: pointer; border: 1px solid transparent;
+  border-radius: 2px; background: none; transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.nav-link:hover { color: var(--paper); border-color: var(--g2); }
+.nav-link.active { color: var(--paper); border-color: var(--g2); background: rgba(255,255,255,0.1); }
+
+/* ── Records page ── */
+.records-page { max-width: 1100px; margin: 0 auto; padding: 32px 36px 80px; font-family: var(--font-sans); }
+.records-page-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 24px; }
+.records-page-title { font-family: var(--font-serif); font-size: 28px; font-weight: 400; color: var(--g0); }
+.records-page-actions { display: flex; gap: 10px; }
+.rp-btn {
+  font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.5px; padding: 8px 18px;
+  border: 1px solid var(--g4); background: var(--paper); color: var(--g1); cursor: pointer;
+  border-radius: 2px; transition: border-color 0.15s, color 0.15s;
+}
+.rp-btn:hover:not(:disabled) { border-color: var(--g0); color: var(--g0); }
+.rp-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.rp-btn-accent { background: var(--g0); color: var(--paper); border-color: var(--g0); }
+.rp-btn-accent:hover:not(:disabled) { background: var(--g1); border-color: var(--g1); }
+.rp-error   { color: var(--accent); font-family: var(--font-mono); font-size: 14px; padding: 16px 0; }
+.rp-loading { color: var(--g3); font-family: var(--font-mono); font-size: 14px; padding: 16px 0; }
+.rp-empty   { color: var(--g2); font-size: 15px; padding: 16px 0; }
+.rp-count   { margin-top: 14px; font-family: var(--font-mono); font-size: 13px; color: var(--g3); }
+.records-tbl { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.records-tbl th { text-align: left; padding: 10px 12px; background: var(--g5); font-family: var(--font-mono); font-size: 11.5px; color: var(--g2); letter-spacing: 1.2px; text-transform: uppercase; font-weight: 700; border-bottom: 2px solid var(--g4); }
+.records-tbl td { padding: 9px 12px; border-bottom: 1px solid var(--g5); vertical-align: middle; }
+.records-tbl tr:hover td { background: var(--g6); }
+.td-mono { font-family: var(--font-mono); }
+.td-num  { text-align: right; font-feature-settings: 'tnum'; }
+
 /* ── Status bar ── */
 .status-bar {
   background: var(--paper);

@@ -10,7 +10,7 @@ import { BatchCalcService } from './core/services/batch-calc.service';
 import { BatchService } from './core/services/batch.service';
 import { RECIPES, REQ_FIELDS } from './core/constants/recipe.constants';
 
-import { AppHeaderComponent } from './components/layout/app-header/app-header.component';
+import { AppHeaderComponent, AppPage } from './components/layout/app-header/app-header.component';
 import { StatusBarComponent } from './components/layout/status-bar/status-bar.component';
 import { SidebarComponent } from './components/layout/sidebar/sidebar.component';
 import { FormFooterComponent } from './components/layout/form-footer/form-footer.component';
@@ -45,6 +45,8 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   form!: FormGroup;
   private sub = new Subscription();
   private observer?: IntersectionObserver;
+
+  page: AppPage = 'form';
 
   systemId     = '';
   autosaveText = 'черновик · не сохранено';

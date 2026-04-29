@@ -1,109 +1,110 @@
-<app-header></app-header>
+<app-header [currentPage]="page" (navigate)="page = $event"></app-header>
 
-<app-status-bar
-  [systemId]="systemId"
-  [freeId]="freeId"
-  [autosaveText]="autosaveText"
-  [showPreview]="showPreview">
-</app-status-bar>
+<!-- ═══ RECORDS PAGE ═══ -->
+<app-saved-records *ngIf="page === 'records'"></app-saved-records>
 
-<form [formGroup]="form" novalidate>
-  <div class="form-shell">
+<!-- ═══ FORM PAGE ═══ -->
+<ng-container *ngIf="page === 'form'">
 
-    <!-- ═══ MAIN FORM ═══ -->
-    <main class="form-main" *ngIf="!showPreview">
-      <app-section-identification [systemId]="systemId"></app-section-identification>
-      <app-section-kalyata
-        [phStatus]="calc.phStatus"
-        [moistureStatus]="calc.moistureStatus">
-      </app-section-kalyata>
-      <app-section-perevary
-        [perevary]="perevary"
-        [deadStatus]="calc.deadStatus"
-        (addPerevar)="addPerevar()"
-        (removePerevar)="removePerevar($event)"
-        (recipeChange)="onPerevarRecipeChange($event)">
-      </app-section-perevary>
-      <app-section-fats
-        [fats]="fats"
-        (addFat)="addFat()"
-        (removeFat)="removeFat($event)">
-      </app-section-fats>
-      <app-section-hydrocolloids
-        [emulsifiers]="emulsifiers"
-        [saltStatus]="calc.saltStatus"
-        (addEmulsifier)="addEmulsifier()"
-        (removeEmulsifier)="removeEmulsifier($event)">
-      </app-section-hydrocolloids>
-      <app-section-water-micro
-        [steamStatus]="calc.steamStatus"
-        [waterSum]="calc.waterSum">
-      </app-section-water-micro>
-      <app-section-chronology [t2Status]="calc.t2Status"></app-section-chronology>
-      <app-section-mass-control
-        [m3Status]="calc.m3Status"
-        [m1Show]="m1Show">
-      </app-section-mass-control>
-      <app-section-recipe-control
-        [recipeCtlLevel1]="calc.recipeCtlLevel1"
-        [recipeCtlLevel2]="calc.recipeCtlLevel2"
-        [recipeCtlNote]="calc.recipeCtlNote"
-        [showRecipeCtlLevel2]="calc.showRecipeCtlLevel2"
-        [recipeCtlNoRecipe]="calc.recipeCtlNoRecipe"
-        [recipeCtlIsCustom]="calc.recipeCtlIsCustom"
+  <app-status-bar
+    [systemId]="systemId"
+    [freeId]="freeId"
+    [autosaveText]="autosaveText"
+    [showPreview]="showPreview">
+  </app-status-bar>
+
+  <form [formGroup]="form" novalidate>
+    <div class="form-shell">
+
+      <!-- ═══ MAIN FORM ═══ -->
+      <main class="form-main" *ngIf="!showPreview">
+        <app-section-identification [systemId]="systemId"></app-section-identification>
+        <app-section-kalyata
+          [phStatus]="calc.phStatus"
+          [moistureStatus]="calc.moistureStatus">
+        </app-section-kalyata>
+        <app-section-perevary
+          [perevary]="perevary"
+          [deadStatus]="calc.deadStatus"
+          (addPerevar)="addPerevar()"
+          (removePerevar)="removePerevar($event)"
+          (recipeChange)="onPerevarRecipeChange($event)">
+        </app-section-perevary>
+        <app-section-fats
+          [fats]="fats"
+          (addFat)="addFat()"
+          (removeFat)="removeFat($event)">
+        </app-section-fats>
+        <app-section-hydrocolloids
+          [emulsifiers]="emulsifiers"
+          [saltStatus]="calc.saltStatus"
+          (addEmulsifier)="addEmulsifier()"
+          (removeEmulsifier)="removeEmulsifier($event)">
+        </app-section-hydrocolloids>
+        <app-section-water-micro
+          [steamStatus]="calc.steamStatus"
+          [waterSum]="calc.waterSum">
+        </app-section-water-micro>
+        <app-section-chronology [t2Status]="calc.t2Status"></app-section-chronology>
+        <app-section-mass-control
+          [m3Status]="calc.m3Status"
+          [m1Show]="m1Show">
+        </app-section-mass-control>
+        <app-section-recipe-control
+          [recipeCtlLevel1]="calc.recipeCtlLevel1"
+          [recipeCtlLevel2]="calc.recipeCtlLevel2"
+          [recipeCtlNote]="calc.recipeCtlNote"
+          [showRecipeCtlLevel2]="calc.showRecipeCtlLevel2"
+          [recipeCtlNoRecipe]="calc.recipeCtlNoRecipe"
+          [recipeCtlIsCustom]="calc.recipeCtlIsCustom"
+          [returnableOk]="calc.returnableOk"
+          [returnableDetail]="calc.returnableDetail"
+          [returnablePct]="calc.returnablePct">
+        </app-section-recipe-control>
+      </main>
+
+      <!-- ═══ PREVIEW ═══ -->
+      <app-preview
+        *ngIf="showPreview"
+        [previewSections]="previewSections"
+        [systemId]="systemId">
+      </app-preview>
+
+      <!-- ═══ SIDEBAR ═══ -->
+      <app-sidebar
+        [balTotal]="calc.balTotal"
+        [balIngredients]="calc.balIngredients"
+        [waterSum]="calc.waterSum"
         [returnableOk]="calc.returnableOk"
-        [returnableDetail]="calc.returnableDetail"
-        [returnablePct]="calc.returnablePct">
-      </app-section-recipe-control>
-    </main>
+        [returnablePct]="calc.returnablePct"
+        [returnableKg]="calc.returnableKg"
+        [totPerevary]="perevary.length"
+        [totFats]="totFats"
+        [totEmuls]="totEmuls"
+        [savedRecordsCount]="savedRecords.length"
+        [warnings]="calc.warnings">
+      </app-sidebar>
 
-    <!-- ═══ PREVIEW ═══ -->
-    <app-preview
-      *ngIf="showPreview"
-      [previewSections]="previewSections"
-      [systemId]="systemId">
-    </app-preview>
+      <!-- ═══ FOOTER ═══ -->
+      <app-form-footer
+        [showPreview]="showPreview"
+        [progressFilled]="calc.progressFilled"
+        [progressTotal]="calc.progressTotal"
+        [progressPct]="calc.progressPct"
+        [systemId]="systemId"
+        [validationError]="validationError"
+        [submitError]="submitError"
+        [submitting]="submitting"
+        [hasSavedRecords]="savedRecords.length > 0"
+        (resetForm)="resetForm()"
+        (downloadJson)="downloadJson()"
+        (saveRecord)="saveRecord()"
+        (cancelAndClear)="cancelAndClear()"
+        (closePreview)="closePreview()"
+        (submitRecord)="submitRecord()">
+      </app-form-footer>
 
-    <!-- ═══ SIDEBAR ═══ -->
-    <app-sidebar
-      [balTotal]="calc.balTotal"
-      [balIngredients]="calc.balIngredients"
-      [waterSum]="calc.waterSum"
-      [returnableOk]="calc.returnableOk"
-      [returnablePct]="calc.returnablePct"
-      [returnableKg]="calc.returnableKg"
-      [totPerevary]="perevary.length"
-      [totFats]="totFats"
-      [totEmuls]="totEmuls"
-      [savedRecordsCount]="savedRecords.length"
-      [warnings]="calc.warnings">
-    </app-sidebar>
+    </div>
+  </form>
 
-    <!-- ═══ FOOTER ═══ -->
-    <app-form-footer
-      [showPreview]="showPreview"
-      [progressFilled]="calc.progressFilled"
-      [progressTotal]="calc.progressTotal"
-      [progressPct]="calc.progressPct"
-      [systemId]="systemId"
-      [validationError]="validationError"
-      [submitError]="submitError"
-      [submitting]="submitting"
-      [hasSavedRecords]="savedRecords.length > 0"
-      (resetForm)="resetForm()"
-      (downloadJson)="downloadJson()"
-      (saveRecord)="saveRecord()"
-      (cancelAndClear)="cancelAndClear()"
-      (closePreview)="closePreview()"
-      (submitRecord)="submitRecord()">
-    </app-form-footer>
-
-    <!-- ═══ SAVED RECORDS ═══ -->
-    <app-saved-records
-      *ngIf="savedRecords.length > 0"
-      [savedRecords]="savedRecords"
-      (removeRecord)="removeRecord($event)">
-    </app-saved-records>
-
-  </div>
-</form>
+</ng-container>
