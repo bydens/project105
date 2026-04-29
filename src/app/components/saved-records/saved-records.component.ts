@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { BatchService } from '../../core/services/batch.service';
 import { PbBatchRecord } from '../../core/models/batch.model';
@@ -10,6 +10,8 @@ import { PbBatchRecord } from '../../core/models/batch.model';
   templateUrl: './saved-records.component.html',
 })
 export class SavedRecordsComponent implements OnInit {
+  @Output() editRecord = new EventEmitter<string>();
+
   records: PbBatchRecord[] = [];
   loading = true;
   error = '';

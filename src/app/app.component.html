@@ -1,7 +1,7 @@
 <app-header [currentPage]="page" (navigate)="page = $event"></app-header>
 
 <!-- ═══ RECORDS PAGE ═══ -->
-<app-saved-records *ngIf="page === 'records'"></app-saved-records>
+<app-saved-records *ngIf="page === 'records'" (editRecord)="onEditRecord($event)"></app-saved-records>
 
 <!-- ═══ FORM PAGE ═══ -->
 <ng-container *ngIf="page === 'form'">
@@ -10,7 +10,8 @@
     [systemId]="systemId"
     [freeId]="freeId"
     [autosaveText]="autosaveText"
-    [showPreview]="showPreview">
+    [showPreview]="showPreview"
+    [editMode]="!!editingId">
   </app-status-bar>
 
   <form [formGroup]="form" novalidate>
@@ -96,6 +97,7 @@
         [submitError]="submitError"
         [submitting]="submitting"
         [hasSavedRecords]="savedRecords.length > 0"
+        [editMode]="!!editingId"
         (resetForm)="resetForm()"
         (downloadJson)="downloadJson()"
         (saveRecord)="saveRecord()"

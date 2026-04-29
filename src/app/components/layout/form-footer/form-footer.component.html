@@ -9,7 +9,7 @@
     <ng-container *ngIf="!showPreview">
       <button type="button" class="btn" (click)="resetForm.emit()">Очистить</button>
       <button type="button" class="btn" (click)="downloadJson.emit()" [disabled]="!hasSavedRecords">Скачать JSON</button>
-      <button type="button" class="btn primary" (click)="saveRecord.emit()">Сохранить запись</button>
+      <button type="button" class="btn primary" (click)="saveRecord.emit()">{{ editMode ? 'Обновить запись' : 'Сохранить запись' }}</button>
     </ng-container>
     <ng-container *ngIf="showPreview">
       <button type="button" class="btn modal-btn-cancel" (click)="cancelAndClear.emit()">Отменить и очистить</button>

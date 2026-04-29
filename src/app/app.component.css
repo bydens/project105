@@ -78,6 +78,13 @@
 .records-tbl tr:hover td { background: var(--g6); }
 .td-mono { font-family: var(--font-mono); }
 .td-num  { text-align: right; font-feature-settings: 'tnum'; }
+.edit-btn {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.5px; padding: 4px 12px;
+  background: transparent; border: 1px solid var(--g4); color: var(--g2);
+  cursor: pointer; border-radius: 2px; transition: border-color 0.15s, color 0.15s;
+}
+.edit-btn:hover { border-color: var(--accent); color: var(--accent); }
+.pill-edit { background: var(--warn) !important; }
 
 /* ── Status bar ── */
 .status-bar {

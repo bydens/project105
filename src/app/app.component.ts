@@ -47,6 +47,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   private observer?: IntersectionObserver;
 
   page: AppPage = 'form';
+  editingId: string | null = null;
 
   systemId     = '';
   autosaveText = 'черновик · не сохранено';
@@ -208,8 +209,12 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     };
     this.submitting  = true;
     this.submitError = '';
-    this.batchSvc.create(payload).subscribe({
-      next:  (created) => this.finalizeSubmit(created),
+    const isEdit = !!this.editingId;
+    const obs = isEdit
+      ? this.batchSvc.update(this.editingId!, payload)
+      : this.batchSvc.create(payload);
+    obs.subscribe({
+      next:  (saved) => this.finalizeSubmit(saved, isEdit),
       error: (err: unknown) => {
         this.submitting  = false;
         const e = err as { status?: number; statusText?: string; message?: string };
@@ -218,12 +223,15 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private finalizeSubmit(record: PbBatchRecord): void {
+  private finalizeSubmit(record: PbBatchRecord, wasEdit: boolean): void {
     this.submitting  = false;
     this.showPreview = false;
-    this.savedRecords.push(record);
-    const ds = this.toYMD(new Date());
-    this.dailyCounter[ds] = (this.dailyCounter[ds] || 0) + 1;
+    this.editingId   = null;
+    if (!wasEdit) {
+      this.savedRecords.push(record);
+      const ds = this.toYMD(new Date());
+      this.dailyCounter[ds] = (this.dailyCounter[ds] || 0) + 1;
+    }
     this.autosaveText = `сохранено · ${new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`;
     this.form.markAsUntouched();
     this.regenerateSystemId();
@@ -233,12 +241,70 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   cancelAndClear(): void {
     this.showPreview = false;
     this.validationError = '';
+    this.editingId = null;
     this.resetFormState();
+  }
+
+  onEditRecord(id: string): void {
+    this.batchSvc.getOne(id).subscribe({
+      next: (rec) => {
+        this.editingId = id;
+        this.page = 'form';
+        this.showPreview = false;
+        this.validationError = '';
+        this.submitError = '';
+
+        while (this.perevary.length)    this.perevary.removeAt(0);
+        while (this.fats.length)        this.fats.removeAt(0);
+        while (this.emulsifiers.length) this.emulsifiers.removeAt(0);
+
+        (rec.perevary ?? []).forEach(p =>
+          this.perevary.push(this.fb.group({ mass: [p.mass], recipe: [p.recipe], moisture: [p.moisture], fat_sv: [p.fat_sv], starch: [p.starch] }))
+        );
+        (rec.fats ?? []).forEach(f =>
+          this.fats.push(this.fb.group({ type: [f.type], mass: [f.mass] }))
+        );
+        if (this.fats.length === 0) this.fats.push(this.createFatGroup());
+
+        (rec.emulsifiers ?? []).forEach(e =>
+          this.emulsifiers.push(this.fb.group({ type: [e.type], mass: [e.mass] }))
+        );
+        if (this.emulsifiers.length === 0) this.emulsifiers.push(this.createEmulsifierGroup());
+
+        this.form.patchValue({
+          brew_date: rec.brew_date, free_id: rec.free_id,
+          operator: rec.operator, machine: rec.machine,
+          source_kalyata: rec.source_kalyata, recipe: rec.recipe,
+          recipe_fat: rec.recipe_fat, grinding_done: rec.grinding_done,
+          m_kalyata: rec.m_kalyata, ph_kalyata: rec.ph_kalyata,
+          moisture_kalyata: rec.moisture_kalyata, fat_kalyata: rec.fat_kalyata,
+          kalyata_fat_type: rec.kalyata_fat_type, m_casein: rec.m_casein,
+          m_dead: rec.m_dead, starch_type: rec.starch_type,
+          m_starch: rec.m_starch, m_salt: rec.m_salt,
+          m_preservative: rec.m_preservative, m_other: rec.m_other,
+          m_direct_water: rec.m_direct_water, m_steam_water: rec.m_steam_water,
+          t_load: rec.t_load, t_unload: rec.t_unload,
+          T1: rec.T1, T2: rec.T2, T3: rec.T3,
+          M3: rec.M3, M4: rec.M4, M5: rec.M5, N: rec.N,
+          t_weighing: rec.t_weighing,
+        });
+
+        this.systemId = rec.system_id;
+        this.autosaveText = `редактирование · ${rec.system_id}`;
+        this.form.markAsUntouched();
+        this.recalc();
+      },
+      error: (err: unknown) => {
+        const e = err as { status?: number; message?: string };
+        alert(`Не удалось загрузить запись: ${e.status ?? ''} ${e.message ?? ''}`.trim());
+      },
+    });
   }
 
   resetForm(): void {
     if (!confirm('Очистить все поля формы?')) return;
     this.validationError = '';
+    this.editingId = null;
     this.resetFormState();
   }
 

@@ -30,7 +30,7 @@
           <th>М₅</th>
           <th>N</th>
           <th>Сохранено</th>
-          <th></th>
+          <th colspan="2"></th>
         </tr>
       </thead>
       <tbody>
@@ -44,6 +44,7 @@
           <td class="td-mono td-num">{{ r.M5 ?? '—' }}</td>
           <td class="td-mono td-num">{{ r.N  ?? '—' }}</td>
           <td class="td-mono">{{ r.created | date:'dd.MM HH:mm' }}</td>
+          <td><button type="button" class="edit-btn" (click)="editRecord.emit(r.id)">Изменить</button></td>
           <td><button type="button" class="del-btn" (click)="remove(i)">×</button></td>
         </tr>
       </tbody>

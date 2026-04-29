@@ -17,6 +17,7 @@ export class FormFooterComponent {
   @Input() submitError      = '';
   @Input() submitting       = false;
   @Input() hasSavedRecords  = false;
+  @Input() editMode         = false;
 
   @Output() resetForm     = new EventEmitter<void>();
   @Output() downloadJson  = new EventEmitter<void>();
