@@ -46,7 +46,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   private sub = new Subscription();
   private observer?: IntersectionObserver;
 
-  page: AppPage = 'form';
+  page: AppPage = 'records';
   editingId: string | null = null;
 
   systemId     = '';
@@ -236,6 +236,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     this.form.markAsUntouched();
     this.regenerateSystemId();
     this.recalc();
+    this.page = 'records';
   }
 
   cancelAndClear(): void {
