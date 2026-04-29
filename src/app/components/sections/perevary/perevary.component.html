@@ -1,0 +1,62 @@
+<section class="form-section" id="sec-03">
+  <div class="fs-head">
+    <span class="fs-num">03</span>
+    <span class="fs-title">Внесение готового продукта</span>
+    <span class="fs-meta">остаток · переварки</span>
+  </div>
+  <div class="fs-body">
+    <div class="field-row full">
+      <div class="field" style="max-width: 280px;">
+        <label class="field-label"><span class="fnum">#15</span>Мёртвый остаток / Н₀<span class="unit">кг</span></label>
+        <input formControlName="m_dead" [class]="'inp numeric ' + deadStatus.cls" type="number" step="0.1" min="0" max="20">
+        <span [class]="deadStatus.helperCls">{{ deadStatus.helperText }}</span>
+      </div>
+    </div>
+
+    <div class="field-divider">Переварки · возвратные партии</div>
+
+    <table class="perevar-tbl">
+      <thead>
+        <tr>
+          <th>Масса, кг</th><th>Наименование рецептуры</th>
+          <th>Влажность, %</th><th>Жирность, % СВ</th><th>Крахмал, %</th><th></th>
+        </tr>
+      </thead>
+      <tbody formArrayName="perevary">
+        <tr *ngFor="let row of perevary.controls; let i = index" [formGroupName]="i">
+          <td data-label="Масса, кг">
+            <input formControlName="mass" class="inp numeric" type="number" min="0" max="100" step="0.1">
+          </td>
+          <td data-label="Рецептура">
+            <select formControlName="recipe" class="inp"
+                    (change)="onRecipeChange(i, $any($event.target).value)">
+              <option value="">— выбрать —</option>
+              <option *ngFor="let r of perevarRecipes" [value]="r">{{ r }}</option>
+            </select>
+          </td>
+          <td data-label="Влажность, %">
+            <input formControlName="moisture" class="inp numeric"
+                   [class.readonly]="!isPerevarCustom(i)" type="number" min="0" max="80" step="0.1"
+                   [readonly]="!isPerevarCustom(i)">
+          </td>
+          <td data-label="Жирность, % СВ">
+            <input formControlName="fat_sv" class="inp numeric"
+                   [class.readonly]="!isPerevarCustom(i)" type="number" min="0" max="80" step="0.1"
+                   [readonly]="!isPerevarCustom(i)">
+          </td>
+          <td data-label="Крахмал, %">
+            <input formControlName="starch" class="inp numeric"
+                   [class.readonly]="!isPerevarCustom(i)" type="number" min="0" max="50" step="0.1"
+                   [readonly]="!isPerevarCustom(i)">
+          </td>
+          <td>
+            <button type="button" class="del-btn" title="Удалить"
+                    (click)="removePerevar.emit(i)">×</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button type="button" class="add-row-btn" (click)="addPerevar.emit()">+ Добавить переварку</button>
+    <div class="helper" style="margin-top:8px">Стандартные рецептуры подтягивают параметры автоматически. Custom — ручной ввод</div>
+  </div>
+</section>

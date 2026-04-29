@@ -1,0 +1,81 @@
+<section class="form-section" id="sec-09">
+  <div class="fs-head">
+    <span class="fs-num">09</span>
+    <span class="fs-title">Контроль соответствия рецептуре</span>
+    <span class="fs-meta">soft-warnings · допуск ±2%</span>
+  </div>
+  <div class="fs-body">
+
+    <div class="recap-box" [class.ok-box]="returnableOk" [class.warn-box]="!returnableOk">
+      <div>
+        <div class="recap-title">Контроль массы возврата</div>
+        <div class="recap-detail">{{ returnableDetail }}</div>
+        <div class="helper" style="margin-top:6px">лимит: ≤ 5% от веса всей варки</div>
+      </div>
+      <div class="recap-pct" [class.warn-pct]="!returnableOk">{{ fmt(returnablePct, 1) }}%</div>
+    </div>
+
+    <div class="ctl-section" style="margin-top: 18px;">
+      <div class="ctl-title">Соответствие рецептуре</div>
+
+      <div *ngIf="recipeCtlNoRecipe" class="ctl-empty">
+        Выберите рецептуру в разделе 01 — расчёт обновится автоматически
+      </div>
+      <div *ngIf="recipeCtlIsCustom" class="ctl-empty">
+        Custom-рецептура: контроль соответствия не применяется
+      </div>
+
+      <ng-container *ngIf="!recipeCtlNoRecipe && !recipeCtlIsCustom">
+        <div class="ctl-subtitle">Уровень 1 — массы ингредиентов</div>
+        <table class="ctl-tbl">
+          <thead>
+            <tr>
+              <th>Категория</th>
+              <th class="num">Рецепт, кг</th><th class="num">Факт, кг</th>
+              <th class="num">Δ, кг</th><th class="num">Δ, %</th><th>Статус</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of recipeCtlLevel1" [class]="row.cls">
+              <td>{{ row.label }}</td>
+              <td class="num">{{ fmt(row.norm, 2) }}</td>
+              <td class="num">{{ fmt(row.fact, 2) }}</td>
+              <td class="num">{{ fmtDelta(row.delta, 2) }}</td>
+              <td class="num">{{ row.norm > 0 ? fmt(row.devPct, 1) : '—' }}</td>
+              <td><span class="badge" [class]="'badge ' + row.cls">{{ row.badge }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="!showRecipeCtlLevel2 && recipeCtlNote"
+             class="helper warn-txt" style="margin-top:10px;padding:10px;background:var(--warn-bg);border:1px solid var(--warn);">
+          {{ recipeCtlNote }}
+        </div>
+
+        <ng-container *ngIf="showRecipeCtlLevel2">
+          <div class="ctl-subtitle" style="margin-top: 18px;">Уровень 2 — пропорции готового продукта</div>
+          <table class="ctl-tbl">
+            <thead>
+              <tr>
+                <th>Компонент</th>
+                <th class="num">Рецепт, %</th><th class="num">Факт, %</th>
+                <th class="num">Δ, п.п.</th><th>Статус</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of recipeCtlLevel2" [class]="row.cls">
+                <td>{{ row.label }}</td>
+                <td class="num">{{ fmt(row.norm, 1) }}</td>
+                <td class="num">{{ fmt(row.fact, 1) }}</td>
+                <td class="num">{{ fmtDelta(row.delta, 1) }}</td>
+                <td><span class="badge" [class]="'badge ' + row.cls">{{ row.badge }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="helper" style="margin-top:8px">{{ recipeCtlNote }}</div>
+        </ng-container>
+      </ng-container>
+    </div>
+
+  </div>
+</section>

@@ -1,0 +1,47 @@
+<section class="form-section" id="sec-08">
+  <div class="fs-head">
+    <span class="fs-num">08</span>
+    <span class="fs-title">Контроль масс</span>
+    <span class="fs-meta">тензометрия + внешние весы</span>
+  </div>
+  <div class="fs-body">
+    <div class="mass-block">
+      <div class="mass-cell">
+        <span class="mc-code">Н₀</span>
+        <span class="mc-name">Мёртвый остаток до загрузки</span>
+        <input class="inp numeric readonly" [value]="m1Show" readonly>
+        <span class="helper">из раздела 03</span>
+      </div>
+      <div class="mass-cell">
+        <span class="mc-code">М₃</span>
+        <span class="mc-name">Все ингредиенты до пара</span>
+        <input formControlName="M3" [class]="'inp numeric ' + m3Status.cls" type="number" step="0.1" min="0" max="400">
+        <span [class]="m3Status.helperCls">{{ m3Status.helperText }}</span>
+      </div>
+      <div class="mass-cell">
+        <span class="mc-code">М₄</span>
+        <span class="mc-name">Перед выпуском</span>
+        <input formControlName="M4" class="inp numeric" type="number" step="0.1" min="0" max="450">
+        <span class="helper">тензометрия котла</span>
+      </div>
+      <div class="mass-cell">
+        <span class="mc-code">М₅</span>
+        <span class="mc-name">Перед водным охлаждением</span>
+        <input formControlName="M5" class="inp numeric" type="number" step="0.1" min="0" max="450">
+        <span class="helper">внешние весы</span>
+      </div>
+      <div class="mass-cell">
+        <span class="mc-code">N</span>
+        <span class="mc-name">Количество блоков</span>
+        <input formControlName="N" class="inp numeric" type="number" step="1" min="0" max="40">
+        <span class="helper">шт</span>
+      </div>
+    </div>
+    <div class="field-row" style="margin-top: 18px;">
+      <div class="field">
+        <label class="field-label">Время взвешивания после воздушного охлаждения<span class="req-mark">★</span></label>
+        <input formControlName="t_weighing" class="inp" type="time">
+      </div>
+    </div>
+  </div>
+</section>

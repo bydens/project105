@@ -1,0 +1,57 @@
+<div class="records-page">
+  <div class="records-page-head">
+    <h2 class="records-page-title">Список записей</h2>
+    <div class="records-page-actions">
+      <button type="button" class="rp-btn" (click)="load()" [disabled]="loading">
+        {{ loading ? 'Загрузка…' : 'Обновить' }}
+      </button>
+      <button type="button" class="rp-btn rp-btn-accent" (click)="downloadJson()" [disabled]="records.length === 0">
+        Экспорт JSON
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="rp-error">{{ error }}</div>
+
+  <div *ngIf="loading && !error" class="rp-loading">Загрузка данных…</div>
+
+  <ng-container *ngIf="!loading && !error">
+    <p *ngIf="records.length === 0" class="rp-empty">Нет сохранённых записей.</p>
+
+    <table *ngIf="records.length > 0" class="records-tbl">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Дата</th>
+          <th>Оператор</th>
+          <th>СМ</th>
+          <th>Рецепт</th>
+          <th>Жир</th>
+          <th>М₅</th>
+          <th>N</th>
+          <th>Сохранено</th>
+          <th colspan="2"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of records; let i = index">
+          <td class="td-mono">{{ r.system_id }}</td>
+          <td class="td-mono">{{ r.brew_date }}</td>
+          <td>{{ r.operator || '—' }}</td>
+          <td>{{ r.machine  || '—' }}</td>
+          <td>{{ r.recipe   || '—' }}</td>
+          <td class="td-mono">{{ fatLabel(r.recipe_fat) }}</td>
+          <td class="td-mono td-num">{{ r.M5 ?? '—' }}</td>
+          <td class="td-mono td-num">{{ r.N  ?? '—' }}</td>
+          <td class="td-mono">{{ r.created | date:'dd.MM HH:mm' }}</td>
+          <td><button type="button" class="edit-btn" (click)="editRecord.emit(r.id)">Изменить</button></td>
+          <td><button type="button" class="del-btn" (click)="remove(i)">×</button></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="records.length > 0" class="rp-count">
+      Всего записей: <strong>{{ records.length }}</strong>
+    </div>
+  </ng-container>
+</div>

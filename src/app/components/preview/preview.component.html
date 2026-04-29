@@ -1,0 +1,20 @@
+<main class="form-main preview-panel">
+  <div class="preview-head">
+    <span class="preview-head-title">Проверка данных перед отправкой</span>
+    <span class="preview-head-id">{{ systemId }}</span>
+  </div>
+  <div class="form-section preview-sec" *ngFor="let sec of previewSections">
+    <div class="fs-head">
+      <span class="fs-num">{{ sec.title.slice(0, 2) }}</span>
+      <span class="fs-title">{{ sec.title.slice(5) }}</span>
+    </div>
+    <div class="fs-body">
+      <table class="preview-tbl">
+        <tr *ngFor="let row of sec.rows">
+          <td class="preview-tbl-label">{{ row.label }}</td>
+          <td class="preview-tbl-val">{{ row.value }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,36 @@
+<section class="form-section" id="sec-07">
+  <div class="fs-head">
+    <span class="fs-num">07</span>
+    <span class="fs-title">Хронология варки</span>
+    <span class="fs-meta">времена · температуры</span>
+  </div>
+  <div class="fs-body">
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Время начала загрузки в СМ<span class="req-mark">★</span></label>
+        <input formControlName="t_load" class="inp" type="time">
+      </div>
+      <div class="field">
+        <label class="field-label">Время начала выгрузки<span class="req-mark">★</span></label>
+        <input formControlName="t_unload" class="inp" type="time">
+      </div>
+    </div>
+
+    <div class="field-divider">Температуры</div>
+    <div class="field-row cols-3">
+      <div class="field">
+        <label class="field-label">T₁ Перед подачей пара<span class="req-mark">★</span><span class="unit">°C</span></label>
+        <input formControlName="T1" class="inp numeric" type="number" step="0.1" min="0" max="100">
+      </div>
+      <div class="field">
+        <label class="field-label">T₂ Максимальная<span class="req-mark">★</span><span class="unit">°C</span></label>
+        <input formControlName="T2" [class]="'inp numeric ' + t2Status.cls" type="number" step="0.1" min="0" max="80">
+        <span [class]="t2Status.helperCls">{{ t2Status.helperText }}</span>
+      </div>
+      <div class="field">
+        <label class="field-label">T₃ Перед выпуском<span class="req-mark">★</span><span class="unit">°C</span></label>
+        <input formControlName="T3" class="inp numeric" type="number" step="0.1" min="0" max="80">
+      </div>
+    </div>
+  </div>
+</section>

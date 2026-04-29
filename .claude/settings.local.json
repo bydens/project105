@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx ng *)"
+      "Bash(npx ng *)",
+      "Bash(npx tsc *)",
+      "Bash(ng build *)",
+      "Bash(python3 -m json.tool)",
+      "Bash(node -e ' *)"
     ]
   }
 }

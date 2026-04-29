@@ -1,0 +1,39 @@
+<aside class="calc-side">
+  <div class="cs-block">
+    <h4>Балансы в реальном времени</h4>
+    <div class="balance-row">
+      <span class="b-name">Масса всей варки</span>
+      <span class="b-val">{{ fmt(balTotal, 1) }} кг</span>
+    </div>
+    <div class="balance-row">
+      <span class="b-name">Σ ингредиентов</span>
+      <span class="b-val">{{ fmt(balIngredients, 1) }} кг</span>
+    </div>
+    <div class="balance-row">
+      <span class="b-name">Σ воды</span>
+      <span class="b-val">{{ fmt(waterSum, 1) }} кг</span>
+    </div>
+    <div class="balance-row" [class.warn]="!returnableOk" [class.ok]="returnableOk && balTotal > 0">
+      <span class="b-name">Возврат</span>
+      <span class="b-val">{{ balReturnableStr }}</span>
+    </div>
+  </div>
+
+  <div class="cs-block">
+    <h4>Сводка</h4>
+    <div class="totals-grid">
+      <div class="t-lbl">Переварки</div>      <div class="t-val">{{ totPerevary }}</div>
+      <div class="t-lbl">Жиры</div>           <div class="t-val">{{ totFats }}</div>
+      <div class="t-lbl">Соли-плавители</div> <div class="t-val">{{ totEmuls }}</div>
+      <div class="t-lbl">Записей сохранено</div><div class="t-val">{{ savedRecordsCount }}</div>
+    </div>
+  </div>
+
+  <div class="cs-block">
+    <h4>Активные предупреждения</h4>
+    <ul class="warnings-list">
+      <li *ngIf="warnings.length === 0" class="empty">Нет активных предупреждений</li>
+      <li *ngFor="let w of warnings" class="w-soft">{{ w }}</li>
+    </ul>
+  </div>
+</aside>

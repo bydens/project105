@@ -1,0 +1,80 @@
+<section class="form-section" id="sec-01">
+  <div class="fs-head">
+    <span class="fs-num">01</span>
+    <span class="fs-title">Идентификация варки</span>
+    <span class="fs-meta">9 полей</span>
+  </div>
+  <div class="fs-body">
+
+    <div class="field-row cols-3">
+      <div class="field">
+        <label class="field-label">
+          <span class="fnum">#1</span>Системный идентификатор
+          <span class="req-mark">★</span><span class="source">авто</span>
+        </label>
+        <input class="inp readonly" [value]="systemId" readonly>
+        <span class="helper">дата + код рецептуры + порядковый # за дату</span>
+      </div>
+      <div class="field">
+        <label class="field-label"><span class="fnum">#2</span>Свободный идентификатор<span class="source">оператор</span></label>
+        <input formControlName="free_id" class="inp" placeholder="произвольная строка (необязателен)">
+      </div>
+      <div class="field">
+        <label class="field-label"><span class="fnum">#3</span>Дата варки<span class="req-mark">★</span></label>
+        <input formControlName="brew_date" class="inp" type="date">
+      </div>
+    </div>
+
+    <div class="field-row cols-3">
+      <div class="field">
+        <label class="field-label"><span class="fnum">#4</span>Имя оператора<span class="req-mark">★</span></label>
+        <select formControlName="operator" class="inp">
+          <option value="">— выбрать —</option>
+          <option *ngFor="let op of operators" [value]="op">{{ op }}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label"><span class="fnum">#5</span>Стрейчмарина<span class="req-mark">★</span></label>
+        <select formControlName="machine" class="inp">
+          <option value="">— выбрать —</option>
+          <option value="SM-1">СМ-1</option>
+          <option value="SM-2">СМ-2</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label"><span class="fnum">#6</span>Источник кальяты</label>
+        <select formControlName="source_kalyata" class="inp">
+          <option value="stab_bath">Из ванны стабилизации</option>
+          <option value="storage">Со склада</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-row cols-3">
+      <div class="field">
+        <label class="field-label"><span class="fnum">#7</span>Рецептура<span class="req-mark">★</span></label>
+        <select formControlName="recipe" class="inp">
+          <option value="">— выбрать —</option>
+          <option *ngFor="let r of recipeNames" [value]="r">{{ r }}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label"><span class="fnum">#8</span>Жир рецептуры<span class="req-mark">★</span></label>
+        <select formControlName="recipe_fat" class="inp">
+          <option value="">— выбрать —</option>
+          <option value="milk">Молочный</option>
+          <option value="vegetable">Растительный</option>
+          <option value="mixed">Смешанный</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label"><span class="fnum">#9</span>Измельчение<span class="source">волокно</span></label>
+        <div class="check-wrap" [class.checked]="grindingDone" (click)="toggleGrinding()">
+          <div class="check-box"><span *ngIf="grindingDone">✓</span></div>
+          <span>Измельчение проведено</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
